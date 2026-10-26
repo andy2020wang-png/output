@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../fonts/local.css">
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+</head>
+<body>
+<canvas id="out" width="1920" height="1080"></canvas>
+<script src="lib.js"></script>
+<script src="transitions.js"></script>
+<script>
+// Scene registry. Each scene file calls scene({...}).
+const SCENES = [];
+function scene(def) { SCENES.push(def); }
+</script>
+<script src="scenes.js"></script>
+<script>
+const out = document.getElementById('out');
+const octx = out.getContext('2d');
+const bufA = makeCanvas(), bufB = makeCanvas();
+let TL = null;
+
+function buildTimeline(ids) {
+  const list = ids ? ids.map(id => SCENES.find(s => s.id === id)).filter(Boolean) : SCENES;
+  let t = 0; const items = [];
+  for (const s of list) { items.push({ s, start: t, end: t + s.dur }); t += s.dur; }
+  return { items, total: t };
+}
+
+function drawScene(item, ctx, lt, T) {
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  item.s.draw(ctx, lt, { T, dur: item.s.dur });
+  ctx.restore();
+}
+
+// Render global time T (seconds) into the output canvas.
+function renderAt(T) {
+  const items = TL.items;
+  let i = items.findIndex(it => T >= it.start && T < it.end);
+  if (i < 0) i = T < 0 ? 0 : items.length - 1;
+  const cur = items[i], prev = items[i - 1];
+  const tr = cur.s.trans; // {type, d}
+  const lt = T - cur.start;
+  if (prev && tr && lt < tr.d) {
+    drawScene(prev, bufA.getContext('2d'), T - prev.start, T);
+    drawScene(cur, bufB.getContext('2d'), lt, T);
+    octx.save(); octx.fillStyle = '#000'; octx.fillRect(0, 0, W, H);
+    TRANS[tr.type](octx, bufA, bufB, lt / tr.d, tr, T);
+    octx.restore();
+  } else {
+    drawScene(cur, octx, lt, T);
+  }
+  if (typeof HUD === 'function') HUD(octx, T, TL, i, lt);
+}
+
+window.setup = async (ids) => {
+  await document.fonts.ready;
+  // Force-load every face so first frames do not fall back.
+  const faces = [...document.fonts];
+  await Promise.all(faces.map(f => f.load().catch(() => null)));
+  TL = buildTimeline(ids);
+  for (const it of TL.items) if (it.s.init) await it.s.init();
+  return { total: TL.total, scenes: TL.items.map(it => ({ id: it.s.id, start: it.start, end: it.end, trans: it.s.trans || null, cues: it.s.cues || [] })) };
+};
+window.renderFrame = (n) => { renderAt(n / FPS); return true; };
+window.renderTime = (t) => { renderAt(t); return true; };
+</script>
+</body>
+</html>

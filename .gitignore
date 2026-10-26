@@ -1,0 +1,12 @@
+# build intermediates (bash build.sh regenerates everything under out/)
+out/*_parts/
+out/cover_art/
+out/audio/mix_raw.wav
+out/audio/sfx_raw.wav
+out/audio/sfx_only.wav
+out/video_noaudio*.mp4
+out/人类如何记录信息_仅音效版.mp4
+out/build.log
+__pycache__/
+*.pyc
+node_modules/
