@@ -1,0 +1,40 @@
+@font-face{font-family:'Abril Fatface';font-style:normal;font-weight:400;src:url('AbrilFatface-400.ttf') format('truetype');}
+@font-face{font-family:'Bebas Neue';font-style:normal;font-weight:400;src:url('BebasNeue-400.ttf') format('truetype');}
+@font-face{font-family:'Cinzel';font-style:normal;font-weight:400;src:url('Cinzel-400.ttf') format('truetype');}
+@font-face{font-family:'Cinzel';font-style:normal;font-weight:700;src:url('Cinzel-700.ttf') format('truetype');}
+@font-face{font-family:'Cormorant Garamond';font-style:normal;font-weight:400;src:url('CormorantGaramond-400.ttf') format('truetype');}
+@font-face{font-family:'Cormorant Garamond';font-style:normal;font-weight:600;src:url('CormorantGaramond-600.ttf') format('truetype');}
+@font-face{font-family:'EB Garamond';font-style:italic;font-weight:400;src:url('EBGaramond-400i.ttf') format('truetype');}
+@font-face{font-family:'EB Garamond';font-style:normal;font-weight:400;src:url('EBGaramond-400.ttf') format('truetype');}
+@font-face{font-family:'EB Garamond';font-style:normal;font-weight:700;src:url('EBGaramond-700.ttf') format('truetype');}
+@font-face{font-family:'Ewert';font-style:normal;font-weight:400;src:url('Ewert-400.ttf') format('truetype');}
+@font-face{font-family:'IM Fell English';font-style:normal;font-weight:400;src:url('IMFellEnglish-400.ttf') format('truetype');}
+@font-face{font-family:'IM Fell English SC';font-style:normal;font-weight:400;src:url('IMFellEnglishSC-400.ttf') format('truetype');}
+@font-face{font-family:'LXGW WenKai TC';font-style:normal;font-weight:400;src:url('LXGWWenKaiTC-400.ttf') format('truetype');}
+@font-face{font-family:'Long Cang';font-style:normal;font-weight:400;src:url('LongCang-400.ttf') format('truetype');}
+@font-face{font-family:'Ma Shan Zheng';font-style:normal;font-weight:400;src:url('MaShanZheng-400.ttf') format('truetype');}
+@font-face{font-family:'Major Mono Display';font-style:normal;font-weight:400;src:url('MajorMonoDisplay-400.ttf') format('truetype');}
+@font-face{font-family:'Noto Sans Cuneiform';font-style:normal;font-weight:400;src:url('NotoSansCuneiform-400.ttf') format('truetype');}
+@font-face{font-family:'Noto Sans Egyptian Hieroglyphs';font-style:normal;font-weight:400;src:url('NotoSansEgyptianHieroglyphs-400.ttf') format('truetype');}
+@font-face{font-family:'Noto Sans Old Italic';font-style:normal;font-weight:400;src:url('NotoSansOldItalic-400.ttf') format('truetype');}
+@font-face{font-family:'Noto Sans Phoenician';font-style:normal;font-weight:400;src:url('NotoSansPhoenician-400.ttf') format('truetype');}
+@font-face{font-family:'Noto Sans SC';font-style:normal;font-weight:300;src:url('NotoSansSC-300.ttf') format('truetype');}
+@font-face{font-family:'Noto Sans SC';font-style:normal;font-weight:400;src:url('NotoSansSC-400.ttf') format('truetype');}
+@font-face{font-family:'Noto Sans SC';font-style:normal;font-weight:700;src:url('NotoSansSC-700.ttf') format('truetype');}
+@font-face{font-family:'Noto Serif SC';font-style:normal;font-weight:400;src:url('NotoSerifSC-400.ttf') format('truetype');}
+@font-face{font-family:'Noto Serif SC';font-style:normal;font-weight:700;src:url('NotoSerifSC-700.ttf') format('truetype');}
+@font-face{font-family:'Noto Serif SC';font-style:normal;font-weight:900;src:url('NotoSerifSC-900.ttf') format('truetype');}
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:400;src:url('PlayfairDisplay-400.ttf') format('truetype');}
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:900;src:url('PlayfairDisplay-900.ttf') format('truetype');}
+@font-face{font-family:'Press Start 2P';font-style:normal;font-weight:400;src:url('PressStart2P-400.ttf') format('truetype');}
+@font-face{font-family:'Rye';font-style:normal;font-weight:400;src:url('Rye-400.ttf') format('truetype');}
+@font-face{font-family:'Silkscreen';font-style:normal;font-weight:400;src:url('Silkscreen-400.ttf') format('truetype');}
+@font-face{font-family:'Smokum';font-style:normal;font-weight:400;src:url('Smokum-400.ttf') format('truetype');}
+@font-face{font-family:'Space Mono';font-style:normal;font-weight:400;src:url('SpaceMono-400.ttf') format('truetype');}
+@font-face{font-family:'Space Mono';font-style:normal;font-weight:700;src:url('SpaceMono-700.ttf') format('truetype');}
+@font-face{font-family:'Special Elite';font-style:normal;font-weight:400;src:url('SpecialElite-400.ttf') format('truetype');}
+@font-face{font-family:'Uncial Antiqua';font-style:normal;font-weight:400;src:url('UncialAntiqua-400.ttf') format('truetype');}
+@font-face{font-family:'UnifrakturMaguntia';font-style:normal;font-weight:400;src:url('UnifrakturMaguntia-400.ttf') format('truetype');}
+@font-face{font-family:'VT323';font-style:normal;font-weight:400;src:url('VT323-400.ttf') format('truetype');}
+@font-face{font-family:'ZCOOL XiaoWei';font-style:normal;font-weight:400;src:url('ZCOOLXiaoWei-400.ttf') format('truetype');}
+@font-face{font-family:'Zhi Mang Xing';font-style:normal;font-weight:400;src:url('ZhiMangXing-400.ttf') format('truetype');}
