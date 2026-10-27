@@ -44,7 +44,7 @@ def paddle(v=1.0, p=0.0):
 def oar_stroke(v=1.0, p=0.0):
     """many oars at once (trireme): low wooden thump plus a broad water push"""
     t = T(.9)
-    thump = np.sin(2 * np.pi * np.cumsum(115 * (1 + .3 * np.exp(-t / .02))) / SR) * np.exp(-t * 16) * _att(t, .008)
+    thump = np.sin(2 * np.pi * np.cumsum(115 * (1 + .3 * np.exp(-t / .02))) / SR) * np.exp(-t * 16) * _att(t, .01)
     push = lp(bp(noise(.9), 150, 1200), 1000) * _att(t, .06) * np.exp(-t * 4.5)
     return v * .55 * pan(.6 * thump + push, p)
 
@@ -84,7 +84,7 @@ def gurgle(d=2.4, v=1.0, p=0.0):
         t0 = RNG.uniform(0, d - .2)
         f0 = RNG.uniform(220, 520)
         tt = t[t >= t0] - t0
-        bub[t >= t0] += np.sin(2 * np.pi * f0 * (1 + 1.2 * tt) * tt) * np.exp(-tt * 28) * _att(tt, .006) * RNG.uniform(.2, .5)
+        bub[t >= t0] += np.sin(2 * np.pi * f0 * (1 + 1.2 * tt) * tt) * np.exp(-tt * 28) * _att(tt, .01) * RNG.uniform(.2, .5)
     return v * .5 * pan(rush + .35 * lp(bub, 900), p)
 
 
@@ -95,6 +95,8 @@ def cannon(v=1.0, p=0.0, d=3.0):
     body = lp(noise(d), 420) * np.exp(-t * 3.2)
     roll = lp(noise(d), 180) * _att(t, .25) * np.exp(-t * 1.1)
     y = (sub + .7 * body + .5 * roll) * _att(t, .01)
+    y = hp(y, 32)
+    y = y + .3 * bp(np.tanh(3 * y / (np.abs(y).max() + 1e-9)) * np.abs(y).max(), 100, 250)
     return v * .6 * pan(y, p)
 
 
@@ -125,7 +127,7 @@ def thunk(v=1.0, p=0.0):
     """shell glancing off armour, heard through the hull: low modal knock, no ring"""
     t = T(1.0)
     y = sum(g * np.sin(2 * np.pi * f * t) * np.exp(-t * k) for f, g, k in [(150, 1, 9), (330, .5, 14), (560, .25, 20)])
-    y = (y + .4 * lp(noise(1.0), 600) * np.exp(-t * 18)) * _att(t, .008)
+    y = (y + .4 * lp(noise(1.0), 600) * np.exp(-t * 18)) * _att(t, .01)
     return v * .55 * pan(lp(y, 1100), p)
 
 
@@ -152,3 +154,38 @@ def catapult(v=1.0):
 def hum(d, v=1.0, f=60):
     """reactor / ship's power: steady, very low"""
     return rumble(d, v * .7, f)
+
+
+def churn(d, v=1.0):
+    """paddle wheels turning: a continuous low wash with a slow rotational swell (one turn per 八拍)"""
+    t = T(d)
+    rot = .7 + .3 * np.sin(2 * np.pi * t / 5.0) ** 2
+    a, b = lp(bp(noise(d), 120, 1800), 1400), lp(bp(noise(d), 120, 1800), 1400)
+    e = np.clip(t / .8, 0, 1) * np.clip((d - t) / .8, 0, 1)
+    return v * .5 * _st(a, b, .7) * rot * e
+
+
+def heave(v=1.0):
+    """a side-lever engine's stroke heard through the hull: slow, round, low"""
+    t = T(1.2)
+    y = np.sin(2 * np.pi * np.cumsum(55 * (1 + .15 * np.sin(np.pi * np.clip(t / .6, 0, 1)))) / SR)
+    y = y * np.sin(np.pi * np.clip(t / .9, 0, 1)) ** 2 + .3 * lp(noise(1.2), 300) * np.sin(np.pi * np.clip(t / .9, 0, 1)) ** 2
+    return v * .5 * pan(lp(y, 600), 0)
+
+
+def prop_plane(v=1.0, d=3.4, p0=-.7, p1=.8, rpm=2200):
+    """radial-engine carrier aircraft taking off and passing: harmonic buzz (9 cylinders, 3 blades)
+    low-passed at 1.2 kHz, a gentle Doppler fall, no whine"""
+    t = T(d)
+    u = t / d
+    dop = 1.05 - .1 / (1 + np.exp(-(u - .45) * 12))              # pitch falls as it passes
+    fire = 9 * rpm / 120 * dop                                     # cylinder firing rate ~165 Hz
+    blade = 3 * rpm / 60 * dop                                     # blade pass ~110 Hz
+    ph_f, ph_b = 2 * np.pi * np.cumsum(fire) / SR, 2 * np.pi * np.cumsum(blade) / SR
+    y = sum(g * np.sin(k * ph_f) for k, g in [(1, 1), (2, .55), (3, .3), (4, .18), (5, .1)])
+    y += sum(g * np.sin(k * ph_b) for k, g in [(1, .7), (2, .3), (3, .12)])
+    y = lp(y + .25 * lp(noise(d), 500), 1200)
+    lvl = np.exp(-((u - .45) ** 2) / .06) * np.clip(t / .3, 0, 1)
+    pp = p0 + (p1 - p0) * u
+    a = (pp + 1) * np.pi / 4
+    return v * .35 * np.stack([y * lvl * np.cos(a), y * lvl * np.sin(a)])

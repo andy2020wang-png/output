@@ -70,11 +70,11 @@ def frame(t):
             d.text((W // 2, 460), h['series'], font=SANS, fill=(int(150 * a),) * 3, anchor='ma')
     elif sid in ch:
         c = ch[sid]
-        a = alpha(lt, .15, 4 * B + .2)
+        a = alpha(lt, .05, 2.0 + .25)
         if a:
             d.text((W // 2, 260), c['title'], font=SERIF, fill=(int(245 * a),) * 3, anchor='ma')
             d.text((W // 2, 360), c['era'], font=SANS, fill=(int(190 * a),) * 3, anchor='ma')
-        card(d, c['card'], 560, alpha(lt, 4 * B, 16 * B - .3))
+        card(d, c['card'], 560, alpha(lt, 4 * B, 9.25 + .25))
     elif sid == 'outro':
         card(d, S.OUTRO[0], 300, alpha(lt, .2, 2 * BAR - .2))
         card(d, S.OUTRO[1], 300, alpha(lt, 2 * BAR + .1, 4 * BAR - .2))

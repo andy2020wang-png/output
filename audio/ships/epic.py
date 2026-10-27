@@ -213,6 +213,13 @@ def pluck(m, kind='harp', v=1.0, p=0.0, d=None):
 
 
 # ---------------------------------------------------------------- percussion (all soft-skinned, no cymbals)
+def weight(y):
+    """phone-speaker translation for low hits: high-pass the sub at 32 Hz and add a soft-saturated
+    100-250 Hz layer so the impact is heard where small speakers start"""
+    y = hp(y, 32)
+    return y + .35 * bp(np.tanh(3 * y / (np.abs(y).max() + 1e-9)) * np.abs(y).max(), 100, 250)
+
+
 def taiko(v=1.0, f=58, d=2.2, p=0.0):
     t = T(d)
     bend = 1 + .3 * np.exp(-t / .035)
@@ -220,7 +227,7 @@ def taiko(v=1.0, f=58, d=2.2, p=0.0):
     y = sum(g * np.sin(ph * r_) * np.exp(-t * k) for r_, g, k in [(1, 1, 3.2), (1.59, .45, 6), (2.14, .2, 9), (2.65, .1, 13)])
     skin = lp(noise(d), 1700) * np.exp(-t / .018)
     y = (y + .35 * skin) * np.sin(np.pi / 2 * np.clip(t / .002, 0, 1)) ** 2
-    return v * .55 * pan(lp(y, 4000), p)
+    return v * .55 * pan(weight(lp(y, 4000)), p)
 
 
 def frame_drum(v=1.0, f=95, p=0.0):
@@ -237,7 +244,7 @@ def timpani(m, v=1.0, d=3.0, p=0.0):
     y = sum(g * np.sin(2 * np.pi * f * r_ * t + RNG.uniform(0, 6)) * np.exp(-t * k) for r_, g, k in [(1, 1, 1.4), (1.5, .55, 2.2), (1.98, .35, 3), (2.44, .15, 4.5)])
     mallet = lp(noise(d), 700) * np.exp(-t / .015)
     y = (y + .4 * mallet) * np.sin(np.pi / 2 * np.clip(t / .003, 0, 1)) ** 2
-    return v * .5 * pan(y, p)
+    return v * .5 * pan(weight(y), p)
 
 
 def snare_soft(v=1.0, p=0.0):
@@ -249,12 +256,22 @@ def snare_soft(v=1.0, p=0.0):
     return v * .3 * pan(lp(y, 3200), p)
 
 
+def heartbeat(v=1.0):
+    """lub-dub of two soft low skins"""
+    out = np.zeros((2, int(1.0 * SR)))
+    for off, g in ((0, 1.0), (.2, .7)):
+        h = taiko(g * v * .6, f=48, d=.7)
+        i = int(off * SR)
+        out[:, i:i + h.shape[1]] += h[:, :out.shape[1] - i]
+    return out
+
+
 def boom(v=1.0, d=2.4):
     """low hit on a downbeat: pitched sub plus dark body, the replacement for any crash cymbal"""
     t = T(d)
     sub = np.sin(2 * np.pi * np.cumsum(38 + 34 * np.exp(-t / .08)) / SR) * np.exp(-t * 1.7)
     body = lp(noise(d), 260) * np.exp(-t * 4)
-    y = (sub + .5 * body) * np.sin(np.pi / 2 * np.clip(t / .004, 0, 1)) ** 2
+    y = weight((sub + .5 * body) * np.sin(np.pi / 2 * np.clip(t / .004, 0, 1)) ** 2)
     return v * .7 * np.stack([y, y])
 
 
@@ -277,7 +294,7 @@ def braam(m, d=3.2, v=1.0):
     t = T(d + 1.2)
     y = y * (1 + .25 * np.sin(np.pi * np.clip(t / d, 0, 1)))
     y = lp(np.tanh(2.2 * y) / 2.2, 1800)
-    sub = np.sin(2 * np.pi * mtof(m - 36) * t) * np.exp(-t * .9) * np.clip(t / .01, 0, 1)
+    sub = hp(np.sin(2 * np.pi * mtof(m - 36) * t) * np.exp(-t * .9) * np.clip(t / .01, 0, 1), 32)
     return v * (y * 1.6 + .25 * np.stack([sub, sub]))
 
 
