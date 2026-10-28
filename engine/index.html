@@ -14,7 +14,11 @@
 const SCENES = [];
 function scene(def) { SCENES.push(def); }
 </script>
-<script src="scenes.js"></script>
+<script>
+// Episode loader: no ?ep= keeps episode 1 exactly as it was; ?ep=<name> loads ep/<name>/scenes.js instead.
+window.EP = new URLSearchParams(location.search).get('ep');
+document.write(`<script src="${window.EP ? `ep/${window.EP}/scenes.js` : 'scenes.js'}"><\/script>`);
+</script>
 <script>
 const out = document.getElementById('out');
 const octx = out.getContext('2d');
@@ -38,10 +42,25 @@ function drawScene(item, ctx, lt, T) {
 }
 
 // Render global time T (seconds) into the output canvas.
+// Transition timing: by default a scene's incoming transition starts on its first frame (episode 1).
+// With window.TRANS_LEAD (set by an episode manifest) it runs in the LAST d seconds of the outgoing scene and
+// completes exactly on the incoming scene's first downbeat; the incoming scene is drawn at negative local time.
 function renderAt(T) {
   const items = TL.items;
   let i = items.findIndex(it => T >= it.start && T < it.end);
   if (i < 0) i = T < 0 ? 0 : items.length - 1;
+  if (window.TRANS_LEAD) {
+    const a = items[i], b = items[i + 1], tr = b && b.s.trans;
+    if (tr && T >= b.start - tr.d) {
+      drawScene(a, bufA.getContext('2d'), T - a.start, T);
+      drawScene(b, bufB.getContext('2d'), T - b.start, T);
+      octx.save(); octx.fillStyle = '#000'; octx.fillRect(0, 0, W, H);
+      TRANS[tr.type](octx, bufA, bufB, (T - (b.start - tr.d)) / tr.d, tr, T);
+      octx.restore();
+    } else drawScene(a, octx, T - a.start, T);
+    if (typeof HUD === 'function') HUD(octx, T, TL, i, T - a.start);
+    return;
+  }
   const cur = items[i], prev = items[i - 1];
   const tr = cur.s.trans; // {type, d}
   const lt = T - cur.start;

@@ -2,6 +2,7 @@
 //   node render.js stills <outDir> <t1,t2,...> [sceneIds]      -> PNG stills at given global times
 //   node render.js range  <out.mp4> <f0> <f1> [sceneIds]       -> frames [f0,f1) piped into ffmpeg
 //   node render.js info   [sceneIds]                           -> timeline JSON
+// EP=<name> selects an episode under engine/ep/<name>/ (unset: episode 1).
 'use strict';
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
@@ -19,7 +20,8 @@ async function open(ids) {
   const errors = [];
   page.on('pageerror', e => errors.push(String(e)));
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
-  await page.goto('file://' + path.join(ROOT, 'engine/index.html') + (ids ? '?ids=' + ids.join(',') : ''));
+  const q = [process.env.EP ? 'ep=' + process.env.EP : '', ids ? 'ids=' + ids.join(',') : ''].filter(Boolean).join('&');
+  await page.goto('file://' + path.join(ROOT, 'engine/index.html') + (q ? '?' + q : ''));
   if (process.env.NOTEXT) await page.evaluate(() => { window.NOTEXT = true; });
   const info = await page.evaluate(ids => window.setup(ids), ids || null);
   const missing = await page.evaluate(() => window.__missing || []);
