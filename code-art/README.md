@@ -38,9 +38,13 @@
 
 | 作品 | 与作者原图的比较 |
 |---|---|
-| Table cloths、Mandelbrot 3 x 133 chars、Julia sets、Some swirly pointy things | 全部像素一致（Julia sets 与 Some swirly pointy things 的差值不超过 2 级，来自取整） |
-| Mandelbrot（Martin Ender） | 99.8% 的像素一致 |
+| Julia sets、Mandelbrot 3 x 133 chars | 全部像素完全一致 |
+| Table cloths | 99.99% 的像素完全一致 |
+| Some swirly pointy things | 99.97% 的像素完全一致 |
+| Mandelbrot（Martin Ender） | 99.7% 的像素完全一致 |
 | Random painter | 画面由 `rand()` 决定，与作者原图风格相同、内容不同 |
+
+不一致的少数像素都在色块或条纹的边界上，来自不同编译器与处理器的浮点舍入。
 
 还原时有两处需要说明：
 
