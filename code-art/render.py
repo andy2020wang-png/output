@@ -209,7 +209,16 @@ class Renderer:
     def _top(self):
         im = Image.new('RGB', (W, TOP), TOP_BG)
         im.paste(self._frame_tile(FRAME, 0), (0, 0), self._frame_tile(FRAME, 0))
+        hot = np.asarray(self._frame_tile(FRAME_HOT, 1.0), np.float32)      # the lit frame, blended in when a picture completes
+        self.hot_rgb, self.hot_a = hot[..., :3], hot[..., 3:4] / 255.0
         return np.asarray(im).copy()
+
+    def _flash(self, out, k):
+        """Light the frame up by k (0..1). Only the four strips around the picture are touched."""
+        a, b = IMG_Y, IMG_Y + IMG
+        for ys, xs in ((slice(0, a), slice(0, TOP)), (slice(b, TOP), slice(0, TOP)), (slice(a, b), slice(0, IMG_X)), (slice(a, b), slice(IMG_X + IMG, TOP))):
+            al = self.hot_a[ys, xs] * k
+            out[ys, xs] = (out[ys, xs] * (1 - al) + self.hot_rgb[ys, xs] * al).astype(np.uint8)
 
     def picture(self, t):
         """-> (1024 px picture, scan info or None, frame flash 0..1)"""
@@ -411,8 +420,7 @@ class Renderer:
         pic, scan, flash = self.picture(t)
         out[IMG_Y:IMG_Y + IMG, IMG_X:IMG_X + IMG] = pic
         if flash > 0.02:                                               # the frame lights up when a picture is complete
-            tile = self._frame_tile(mix(FRAME_HOT, FRAME, flash), flash)
-            self._paste(out, tile, 0, 0, 1.0)
+            self._flash(out, flash)
         if scan:
             self.scan_label(out, *scan)
         out[TOP:] = np.asarray(self.panel(t))
