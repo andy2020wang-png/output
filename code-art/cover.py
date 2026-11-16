@@ -1,4 +1,5 @@
-"""Cover: the film's cover picture in a frame on a dark gallery wall, with the words 程序的艺术.
+"""Cover: the film's cover picture in a frame on a dark gallery wall, with the words 程序的艺术 and the
+volume (上 / 下) in gold.
 
 1080x1920. Everything that matters sits inside the central 1080x1440 (3:4), the part profile grids
 on TikTok and Douyin show; that part is also written as its own file.
@@ -16,7 +17,8 @@ from piece import load_film, HERE
 
 W, H = 1080, 1920
 GRID = (240, 1680)                   # rows a 3:4 profile grid shows
-TITLE = '程序的艺术'
+TITLE_MAX = 900                      # widest the title group may be
+MARK_GAP = 44                        # title -> volume mark (上 / 下)
 FONT_DIR = os.path.join(HERE, '..', 'fonts')
 
 ART = 744                            # picture size on the cover
@@ -25,7 +27,7 @@ SLIP = 7                             # gold slip between moulding and mat
 MOULD = 34                           # moulding width
 INNER = MOULD + SLIP + MAT           # frame edge -> picture edge
 OUTER = ART + 2 * INNER
-TITLE_SIZE, TITLE_TRACK, TITLE_GAP = 124, 30, 112
+TITLE_SIZE, TITLE_TRACK, TITLE_GAP = 120, 28, 112
 SS = 3                               # supersampling of the frame
 
 LIGHT = np.array([-0.30, -0.80, 0.52]); LIGHT /= np.linalg.norm(LIGHT)
@@ -34,6 +36,7 @@ HALF = LIGHT + np.array([0, 0, 1.0]); HALF /= np.linalg.norm(HALF)
 STYLE = dict(
     font='NotoSerifSC-900.ttf',
     title=(236, 229, 214),
+    mark=(222, 190, 126),                                            # the volume mark: gold, like the frame's slip
     wall=(14, 14, 17), spot=(70, 62, 52),
     mould=dict(base=(0.085, 0.080, 0.075), ka=1.0, kd=1.3, ks=0.55, shin=30, spec=(1.0, 0.97, 0.92)),
     slip=dict(base=(0.72, 0.56, 0.30), ka=0.40, kd=0.85, ks=0.85, shin=16, spec=(1.0, 0.92, 0.70)),
@@ -115,28 +118,45 @@ def frame(style, light_at):
     return np.clip(col * 255, 0, 255), alpha
 
 
-def title(img, light, style, top):
-    """程序的艺术, letter-spaced and centred on its ink, as lettering on the wall."""
-    f = font(style['font'], TITLE_SIZE)
-    xs, x = [], 0.0
-    for c in TITLE:
-        xs.append(x)
-        x += f.getlength(c) + TITLE_TRACK
-    ink0 = xs[0] + f.getbbox(TITLE[0], anchor='ls')[0]
-    ink1 = xs[-1] + f.getbbox(TITLE[-1], anchor='ls')[2]
-    off = W / 2 - (ink0 + ink1) / 2
-    asc = -min(f.getbbox(c, anchor='ls')[1] for c in TITLE)          # cap height above the baseline
-    mask = Image.new('L', (W, H), 0)
-    d = ImageDraw.Draw(mask)
-    for c, cx in zip(TITLE, xs):
+def title(img, light, style, top, text, mark=None):
+    """The title, letter-spaced, and after it the volume mark (上 / 下) in gold. The group is centred on its ink."""
+    size = TITLE_SIZE
+    while True:                                                       # shrink only if the group would be too wide
+        f = font(style['font'], size)
+        track = TITLE_TRACK * size / TITLE_SIZE
+        xs, x = [], 0.0
+        for c in text:
+            xs.append(x)
+            x += f.getlength(c) + track
+        boxes = [f.getbbox(c, anchor='ls') for c in text]
+        ink0, ink1 = xs[0] + boxes[0][0], xs[-1] + boxes[-1][2]
+        asc = -min(b[1] for b in boxes)
+        gap = MARK_GAP * size / TITLE_SIZE
+        mb = f.getbbox(mark, anchor='ls') if mark else (0, 0, 0, 0)
+        right = ink1 + gap + (mb[2] - mb[0]) if mark else ink1
+        if right - ink0 <= TITLE_MAX:
+            break
+        size -= 2
+    off = W / 2 - (ink0 + right) / 2
+    lit = 0.86 + 0.18 * light[..., None]
+    layers = []
+    m = Image.new('L', (W, H), 0)
+    d = ImageDraw.Draw(m)
+    for c, cx in zip(text, xs):
         d.text((off + cx, top + asc), c, font=f, fill=255, anchor='ls')
-    a = np.asarray(mask, np.float32)[..., None] / 255
-    ink = np.array(style['title'], np.float32) * (0.86 + 0.18 * light[..., None])
-    return img * (1 - a) + ink * a
+    layers.append((m, style['title']))
+    if mark:
+        m = Image.new('L', (W, H), 0)
+        ImageDraw.Draw(m).text((off + ink1 + gap - mb[0], top + asc), mark, font=f, fill=255, anchor='ls')
+        layers.append((m, style['mark']))
+    for m, colour in layers:
+        a = np.asarray(m, np.float32)[..., None] / 255
+        img = img * (1 - a) + np.array(colour, np.float32) * lit * a
+    return img
 
 
-def draw(art, style=STYLE):
-    """art: (1024, 1024, 3) uint8 -> cover (H, W, 3) uint8"""
+def draw(art, text='程序的艺术', mark=None, style=STYLE):
+    """art: (1024, 1024, 3) uint8 -> cover (H, W, 3) uint8. mark: the volume, 上 or 下, or None."""
     t_top, f_top = layout()
     fx = (W - OUTER) // 2
     img, light = wall(style, f_top)
@@ -148,7 +168,7 @@ def draw(art, style=STYLE):
     ImageDraw.Draw(sil).rectangle([fx + 2, f_top + 6, fx + OUTER + 2, f_top + OUTER + 6], fill=255)
     near = np.asarray(sil.filter(ImageFilter.GaussianBlur(6)), np.float32) / 255
     img *= (1 - 0.72 * soft)[..., None] * (1 - 0.45 * near)[..., None]
-    img = title(img, light, style, t_top)
+    img = title(img, light, style, t_top, text, mark)
     # the picture, with the mat's shadow along its top and left edge
     pic = np.asarray(Image.fromarray(art).resize((ART, ART), Image.LANCZOS), np.float32)
     k = np.arange(ART, dtype=np.float32)
@@ -165,7 +185,8 @@ def draw(art, style=STYLE):
 def main():
     work, which, out = sys.argv[1], sys.argv[2], sys.argv[3]
     film = load_film(work, which)
-    cover = draw(film.pieces[film.cover].render())
+    text, _, mark = film.title.partition(' ')
+    cover = draw(film.pieces[film.cover].render(), text, mark or None)
     os.makedirs(os.path.dirname(os.path.abspath(out)) or '.', exist_ok=True)
     Image.fromarray(cover).save(out, optimize=True)
     stem, ext = os.path.splitext(out)
