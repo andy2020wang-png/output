@@ -30,7 +30,7 @@
 
 - 三个函数体与原帖逐字一致，没有改动。字符数不含换行与缩进，只计入 `#define` 所必需的那个换行。
 - 函数体以外的部分（`pieces/tweet.h` 和每个文件里的声明、`TWEET_MAIN`）是本仓库写的外壳，行为与挑战给出的 C++ 模板相同：同样的宏、同样的逐行顺序、每个像素依次调用红绿蓝三个函数、同样的取值掩码。
-- 这些作品按 CC BY-SA 授权。发布本片时需要署名作者、给出出处，并以相同的许可方式分享。片中每幅作品的作者写在分隔栏右侧，标题、出处与许可写在代码下方。
+- 这些作品按 CC BY-SA 授权。发布本片时需要署名作者、给出出处，并以相同的许可方式分享。片中分隔栏写有每幅作品的名字与作者；出处与许可协议不放在画面里，写在文末的发布文案中，发布时请一并贴出。
 
 ### 还原核对
 
@@ -58,7 +58,7 @@
 
 - 没有标题画面。第一帧就是完成的图（得票第一的作品），0.4 秒后自下而上擦除，然后从第 6 名开始。片尾停在同一幅图上，首尾相接可以循环。
 - 每幅作品：三个函数同时打出，图像自上而下一遍算完（3 秒），打字与扫描同时开始、同时结束。扫描线上的标签显示正在计算的行，如 `j = 512`。算完后边框亮一下，停留 1.5 秒，然后擦除，进入下一幅。
-- 分隔栏：左边三个圆点（红、绿、蓝，计算时闪动，完成后点亮），标题"程序与艺术"，右侧是这幅作品的作者。
+- 分隔栏：左边三个圆点（红、绿、蓝，计算时闪动，完成后点亮），接着是这幅画的名字，右侧是作者。
 - 下半屏三路：每路左边是该通道单独贡献的小图（按通道着色，与上方大图同步扫出），右边是对应的函数体，三个光标同时前进。上方的大图就是三路叠加的结果。函数体按宽度折行，折行处尽量落在语句或运算符上；不显示函数签名。
 - 扫描顺序与程序写像素的顺序一致（`j` 从 0 到 1023）。刚算出的行会短暂过曝再回落，扫描线的亮度跟随该行的像素值。
 
@@ -96,8 +96,20 @@ bash code-art/build.sh
 
 ## 发布文案
 
-- 标题：三个函数，每个不超过 140 个字符，能算出什么
+- 标题：程序与艺术｜三个函数，每个不超过 140 个字符，能算出什么
 - 正文：Tweetable Mathematical Art 挑战里得票最高的六幅，从第 6 名到第 1 名。红、绿、蓝各一个函数，三路一起算出一幅图。
-- 署名（请保留）：作品作者依次为 teh internets is made of catz、Manuel Kasten、Martin Ender、cjfaure、Martin Ender、trichoplax；出处 codegolf.stackexchange.com/q/35569；CC BY-SA。
 - 话题：#程序与艺术 #数学之美 #分形 #编程 #创意编程 #解压
-- 英文版：The six top-voted entries of "Tweetable Mathematical Art": three functions, 140 characters each. Art by teh internets is made of catz, Manuel Kasten, Martin Ender, cjfaure and trichoplax (codegolf.stackexchange.com/q/35569, CC BY-SA). #codeart #mathart #fractal #creativecoding #generativeart #satisfying
+- 出处与协议（画面里只有作品名与作者，这一段请随视频一并发布）：
+
+  ```
+  作品出自 Code Golf Stack Exchange 的 Tweetable Mathematical Art 挑战
+  （codegolf.stackexchange.com/q/35569），按 CC BY-SA 协议使用，本视频以相同协议分享。
+  1. Julia sets — teh internets is made of catz — codegolf.stackexchange.com/a/35674 — CC BY-SA 3.0
+  2. Mandelbrot 3 x 133 chars — Manuel Kasten — codegolf.stackexchange.com/a/35739 — CC BY-SA 4.0
+  3. Mandelbrot — Martin Ender — codegolf.stackexchange.com/a/35601 — CC BY-SA 3.0
+  4. Some swirly pointy things — cjfaure — codegolf.stackexchange.com/a/35689 — CC BY-SA 3.0
+  5. Random painter — Martin Ender — codegolf.stackexchange.com/a/35626 — CC BY-SA 3.0
+  6. Table cloths — trichoplax — codegolf.stackexchange.com/a/35641 — CC BY-SA 4.0
+  ```
+
+- 英文版：The six top-voted entries of "Tweetable Mathematical Art": three functions, 140 characters each, one picture. Art by teh internets is made of catz, Manuel Kasten, Martin Ender, cjfaure and trichoplax (codegolf.stackexchange.com/q/35569, CC BY-SA). #codeart #mathart #fractal #creativecoding #generativeart #satisfying

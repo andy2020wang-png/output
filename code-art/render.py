@@ -15,7 +15,7 @@ W, H = 1080, 1920
 TOP = 1080                       # the picture area is the top 1080 px
 IMG = 1024                       # pictures are shown pixel for pixel
 IMG_X = IMG_Y = (TOP - IMG) // 2
-BAR_Y, BAR_H = TOP, 86           # the strip between picture and code: three lights, title, author
+BAR_Y, BAR_H = TOP, 86           # the strip between picture and code: three lights, the picture's name, its author
 FS = 26                          # code font size
 LINE_H = 38
 LANE_X, LANE_Y = 34, BAR_Y + BAR_H + 26
@@ -164,8 +164,6 @@ class Renderer:
         self.f_title = sans(36, 700)
         self.f_author = sans(29, 400)
         self.f_scan = mono(21, True)
-        self.f_src = mono(18)
-        self.f_tag = mono(17, True)
         self.blank = self._blank()
         self.art = [p.render() for p in pieces]
         self.thumb = []                                   # per piece: three tinted channel pictures (THUMB px, float)
@@ -176,7 +174,8 @@ class Renderer:
         self.bar = self._static_bar()
         self.rows = [[layout(f[2], self.cols) for f in p.fns] for p in pieces]
         self.tok = [[classify(f[2]) for f in p.fns] for p in pieces]
-        self.credit = ['%s · %s · %s' % (p.title, p.url.replace('https://', ''), p.license) for p in pieces]
+        for p in pieces:                                  # name on the left, author on the right: they must not meet
+            assert 166 + self.f_title.getlength(p.title) + 40 < SAFE_R - self.f_author.getlength(p.author), p.title
 
     # ---------------------------------------------------------------- picture area
     def _blank(self):
@@ -296,7 +295,6 @@ class Renderer:
         d = ImageDraw.Draw(im)
         d.line([(0, 0), (W, 0)], fill=(44, 51, 70))
         d.line([(0, BAR_H - 1), (W, BAR_H - 1)], fill=RULE)
-        d.text((166, BAR_H // 2 - 2), '程序与艺术', font=self.f_title, fill=(238, 242, 250), anchor='lm')
         return im
 
     def panel(self, t):
@@ -312,7 +310,7 @@ class Renderer:
         t_end = max((t1 for t0, t1, pp in tl.passes if pp == s.piece and t1 <= t + 1e-9), default=-9.0)
         idle = t - s.t
 
-        # ---- the strip: three lights, title, author
+        # ---- the strip: three lights, the picture's name, its author
         cy = BAR_H // 2
         for k in range(3):
             lit = state == 'done'
@@ -333,6 +331,7 @@ class Renderer:
                                outline=mix(CH[k], BAR, 0.62 if active else 0.42) + (255,), width=int(2.5 * ss))
             tile = aa(60, 60, dot)
             im.paste(tile, (56 + 38 * k - 30, cy - 30), tile)
+        d.text((166, cy - 2), p.title, font=self.f_title, fill=(238, 242, 250), anchor='lm')
         d.text((SAFE_R, cy - 1), p.author, font=self.f_author, fill=(186, 195, 216), anchor='rm')
 
         # ---- three lanes: channel picture + function, all three advancing together
@@ -368,7 +367,6 @@ class Renderer:
                 cx, cyy = CODE_X + cur[0] * self.cw, y + cur[1] * LINE_H + 1
                 d.rectangle([cx, cyy + 4, cx + 3, cyy + LINE_H - 7], fill=mix(CH[k], (255, 255, 255), 0.45))
             y += lane_h + LANE_GAP
-        d.text((LANE_X, H - BAR_Y - 300), self.credit[s.piece], font=self.f_src, fill=(84, 94, 122))
         return im
 
     # ---------------------------------------------------------------- frame
