@@ -16,12 +16,12 @@ TOP = 1080                       # the picture area is the top 1080 px
 IMG = 1024                       # pictures are shown pixel for pixel
 IMG_X = IMG_Y = (TOP - IMG) // 2
 BAR_Y, BAR_H = TOP, 86           # the strip between picture and code: three lights, the picture's name, its author
-FS = 26                          # code font size
-LINE_H = 38
-LANE_X, LANE_Y = 34, BAR_Y + BAR_H + 26
-THUMB = 3 * LINE_H               # channel picture: as tall as three lines of code
-LANE_GAP = 14
-CODE_X = LANE_X + THUMB + 18
+FS = 29                          # code font size
+LINE_H = 51
+LANE_X, LANE_Y = 34, BAR_Y + BAR_H + 24
+THUMB = 4 * LINE_H               # channel picture: as tall as four lines of code
+LANE_GAP = 22
+CODE_X = LANE_X + THUMB + 20
 SAFE_R = 934                     # nothing important right of this (TikTok buttons)
 
 # ---- palette -----------------------------------------------------------------
@@ -355,8 +355,9 @@ class Renderer:
             toks = self.tok[s.piece][k]
             n = s.n[k]
             cur = (0, 0)
+            top = y + (lane_h - len(rows) * LINE_H) // 2             # fewer rows than the picture is tall: centre them
             for r, (a, b) in enumerate(rows):
-                ry = y + r * LINE_H + 1
+                ry = top + r * LINE_H + 6
                 for pos, tk, c in toks:
                     u, v = max(pos, a), min(pos + len(tk), b, n)
                     if u < v and tk[u - pos:v - pos].strip():
@@ -364,8 +365,8 @@ class Renderer:
                 if n > a or r == 0:
                     cur = (min(n, b) - a, r)
             if s.caret and (idle < 0.35 or (idle % 1.0) < 0.5):
-                cx, cyy = CODE_X + cur[0] * self.cw, y + cur[1] * LINE_H + 1
-                d.rectangle([cx, cyy + 4, cx + 3, cyy + LINE_H - 7], fill=mix(CH[k], (255, 255, 255), 0.45))
+                cx, cyy = CODE_X + cur[0] * self.cw, top + cur[1] * LINE_H + 6
+                d.rectangle([cx, cyy + 3, cx + 3, cyy + FS + 9], fill=mix(CH[k], (255, 255, 255), 0.45))
             y += lane_h + LANE_GAP
         return im
 
