@@ -32,8 +32,8 @@
 
 ## 另一个系列：程序与艺术（竖屏，纯音效）
 
-`code-art/` 是独立的竖屏短视频：上半屏是细边框里被逐行算出来的图，下半屏是算出它的代码，只有音效、没有音乐。说明见 `code-art/README.md`。
+`code-art/` 是独立的竖屏短视频：上半屏是细边框里自上而下算出来的图，下半屏是红、绿、蓝三路函数与各自的通道小图，只有音效、没有音乐。说明见 `code-art/README.md`。
 
-- 第一期选题 Tweetable Mathematical Art：该挑战里得票最高的六幅作品，从第 6 名倒数到第 1 名。成片 `out/程序与艺术_Tweetable_Mathematical_Art.mp4`（1080×1920，60 fps，34.3 秒），封面 `out/程序与艺术_Tweetable_Mathematical_Art_封面.png`。
+- 第一期选题 Tweetable Mathematical Art：该挑战里得票最高的六幅作品，从第 6 名到第 1 名。成片 `out/程序与艺术_Tweetable_Mathematical_Art.mp4`（1080×1920，60 fps，30.0 秒），封面 `out/程序与艺术_Tweetable_Mathematical_Art_封面.png`。
 - 六幅作品的函数体出自各自的作者，按 CC BY-SA 授权，出处与署名见 `code-art/README.md`。
 - 重新出片：`bash code-art/build.sh`（约 3 分钟）。

@@ -164,7 +164,7 @@ def moving_noise(rng, fc, width=0.42):
 
 
 # ------------------------------------------------------------------ the scan: filling with water and light
-def scan_sound(rng, bus_water, bus_air, bus_glint, t0, dur, ch, rows):
+def scan_sound(rng, bus_water, bus_air, bus_glint, t0, dur, ch, rows, density=1.0, with_air=True):
     """rows: per image row, dict of 0..1 arrays 'mean' (brightness of the new channel) and 'spark' (very bright share)."""
     n = int((dur + 0.5) * SR)
     t = np.arange(n) / SR
@@ -174,13 +174,14 @@ def scan_sound(rng, bus_water, bus_air, bus_glint, t0, dur, ch, rows):
     bright = rows['mean'][row]
     # --- breath of air: band of noise whose centre rises with the scan
     lift = 2 ** (ch * 0.30)                                               # each channel a little higher
-    air_m, air_s = moving_noise(rng, 330.0 * lift * (3.1 ** u))
-    env = on * (0.55 + 0.45 * bright)
-    env = lp(env, 12)
-    air_m *= env; air_s *= env
-    bus_air.add_stereo(t0, air_m + 0.45 * air_s, air_m - 0.45 * air_s, gain=G_AIR * (1.0, 1.1, 1.25)[ch])
+    if with_air:
+        air_m, air_s = moving_noise(rng, 330.0 * lift * (3.1 ** u))
+        env = on * (0.55 + 0.45 * bright)
+        env = lp(env, 12)
+        air_m *= env; air_s *= env
+        bus_air.add_stereo(t0, air_m + 0.45 * air_s, air_m - 0.45 * air_s, gain=G_AIR * (1.0, 1.1, 1.25)[ch])
     # --- trickle: many small bubbles (Minnaert resonance f = 3/r, radius in metres), smaller as the picture fills
-    rate = 230.0
+    rate = 230.0 * density
     count = rng.poisson(rate * dur)
     for tb in np.sort(rng.uniform(0, dur, count)):
         ub = ease_scan(tb / dur)
@@ -200,7 +201,7 @@ def scan_sound(rng, bus_water, bus_air, bus_glint, t0, dur, ch, rows):
         bus_water.add(t0 + tb, amp * np.sin(ph) * np.exp(-d * tt), gain=G_WATER * g * (1.0, 1.22, 1.5)[ch], pan=rng.uniform(-0.7, 0.7))
     # --- glints: where the row holds very bright pixels, fine high pings
     spark = rows['spark'][row]
-    lam = 3.0 + 60.0 * spark                                              # events per second
+    lam = (3.0 + 60.0 * spark) * density                                  # events per second
     p = lam / SR
     hits = np.nonzero(rng.uniform(size=n) < p * on)[0]
     for i in hits:
@@ -243,11 +244,9 @@ def score(tl, arts, seed=20261115):
         l, r = whoosh(rng, t1 - t0)
         air.add_stereo(max(0.0, t0 - 0.05), l, r, gain=G_WHOOSH)
     stats = [row_stats(a) for a in arts]
-    for t0, t1, p, ch in tl.passes:
-        scan_sound(rng, water, air, shine, t0, t1 - t0, ch, stats[p][ch])
-        if ch < 2:                                                         # channel landed
-            ui.add(t1, pop(600 * 2 ** (ch * 0.30), 350 * 2 ** (ch * 0.30)), gain=G_POP)
-            ui.add(t1, tick(rng), gain=0.08)
+    for t0, t1, p in tl.passes:                                            # one scan: the three channels pour together,
+        for ch in range(3):                                                # each in its own register, one breath of air under them
+            scan_sound(rng, water, air, shine, t0, t1 - t0, ch, stats[p][ch], density=0.45, with_air=(ch == 1))
     for tb, p in tl.done:                                                  # a picture is complete
         final = p == len(arts) - 1
         n = int(2.4 * SR)
