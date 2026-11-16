@@ -35,6 +35,5 @@
 `code-art/` 是独立的竖屏短视频：上半屏是细边框里自上而下算出来的图，下半屏是红、绿、蓝三路函数与各自的通道小图，只有音效、没有音乐。说明见 `code-art/README.md`。
 
 - 选题 Tweetable Mathematical Art，分上、下两条，各六幅、各 30.0 秒（1080×1920，60 fps）：`out/程序的艺术_上.mp4`、`out/程序的艺术_下.mp4`，封面 `out/程序的艺术_上_封面.png`、`out/程序的艺术_下_封面.png`。
-- 目前"下"已出片；"上"里的 Buddhabrot 要算几个小时，算完后出片。
 - 十二幅作品的函数体出自各自的作者，按 CC BY-SA 授权，出处与署名见 `code-art/README.md`。
 - 重新出片：`bash code-art/build.sh`（每条约 3 分钟）。
