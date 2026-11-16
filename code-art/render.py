@@ -422,16 +422,12 @@ def main():
     ap.add_argument('work')
     ap.add_argument('film', help='which film of films.txt: its title, 上 / 下, or 1 / 2')
     ap.add_argument('--stills', help='comma separated times in seconds')
-    ap.add_argument('--cover', help="write the cover (the film's cover piece, finished) to this path")
     ap.add_argument('--out', help='output dir for stills / path for video')
     ap.add_argument('--crf', type=int, default=15)
     a = ap.parse_args()
     film = load_film(a.work, a.film)
     tl = build(film.pieces)
     r = Renderer(film.pieces, tl)
-    if a.cover:
-        os.makedirs(os.path.dirname(os.path.abspath(a.cover)), exist_ok=True)
-        Image.fromarray(r.frame(int(round(tl.cover_time(film.cover) * FPS)))).save(a.cover, optimize=True)
     if a.stills:
         os.makedirs(a.out, exist_ok=True)
         for ts in a.stills.split(','):

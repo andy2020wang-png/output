@@ -92,10 +92,6 @@ class Timeline:
                 hi = mid - 1
         return self.snaps[lo]
 
-    def cover_time(self, k):
-        """A moment at which piece k stands finished, after the frame's flash has faded."""
-        return self.done[k][0] + 1.2
-
     def canvas(self, t):
         """-> (piece, state, progress): state is 'done' | 'scan' | 'wipe' | 'blank'."""
         for t0, t1, p in self.wipes:
@@ -155,6 +151,6 @@ if __name__ == '__main__':
     film = load_film(sys.argv[1], sys.argv[2])
     ps = film.pieces
     tl = build(ps)
-    print(f'{film.title}: total {tl.total:.2f}s  frames {tl.frames}  snaps {len(tl.snaps)}  keys {len(tl.keys)}  cover at {tl.cover_time(film.cover):.2f}s')
+    print(f'{film.title}: total {tl.total:.2f}s  frames {tl.frames}  snaps {len(tl.snaps)}  keys {len(tl.keys)}')
     for (t0, t1, p), (s0, s1, q), (td, _) in zip(tl.wipes, tl.passes, tl.done):
         print('wipe %.2f-%.2f (erases %s)   scan %.2f-%.2f  %s   done %.2f' % (t0, t1, ps[p].title, s0, s1, ps[q].title, td))

@@ -27,10 +27,13 @@ for F in "${FILMS[@]}"; do
   # 2. sound: effects only, mastered to -18 LUFS
   python3 sfx.py "$WORK" "$F" "$WORK/$NAME.wav"
 
-  # 3. picture: 1080x1920, 60 fps, H.264; the cover is the film's cover piece, finished
-  python3 render.py "$WORK" "$F" --out "$WORK/$NAME.video.mp4" --cover "$OUT/${NAME}_封面.png"
+  # 3. picture: 1080x1920, 60 fps, H.264
+  python3 render.py "$WORK" "$F" --out "$WORK/$NAME.video.mp4"
 
-  # 4. master
+  # 4. cover: the film's cover piece in a frame, with the title (also a 3:4 version)
+  python3 cover.py "$WORK" "$F" "$OUT/${NAME}_封面.png"
+
+  # 5. master
   ffmpeg -v error -y -i "$WORK/$NAME.video.mp4" -i "$WORK/$NAME.wav" -map 0:v -map 1:a \
     -c:v copy -c:a aac -b:a 256k -ar 48000 -metadata title="$TITLE" -movflags +faststart "$OUT/$NAME.mp4"
   cp "$WORK/$NAME.wav" "$OUT/${NAME}_音轨.wav"
