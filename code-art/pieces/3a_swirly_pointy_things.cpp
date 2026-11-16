@@ -1,4 +1,4 @@
-// 程序与艺术 · Tweetable Mathematical Art
+// Tweetable Mathematical Art
 // @rank 3
 // @votes 162
 // @title Some swirly pointy things

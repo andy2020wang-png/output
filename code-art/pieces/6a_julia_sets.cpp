@@ -1,4 +1,4 @@
-// 程序与艺术 · Tweetable Mathematical Art
+// Tweetable Mathematical Art
 // @rank 6
 // @votes 110
 // @title Julia sets

@@ -1,4 +1,4 @@
-// 程序与艺术 · Tweetable Mathematical Art
+// Tweetable Mathematical Art
 // @rank 5
 // @votes 120
 // @title Mandelbrot 3 x 133 chars

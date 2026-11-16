@@ -1,4 +1,4 @@
-// 程序与艺术 · Tweetable Mathematical Art
+// Tweetable Mathematical Art
 // @rank 2
 // @votes 190
 // @title Random painter

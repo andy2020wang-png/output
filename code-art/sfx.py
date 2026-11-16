@@ -341,12 +341,12 @@ def write_wav(path, x, peak=None):
 
 if __name__ == '__main__':
     import os
-    from piece import load_all
+    from piece import load_film
     from timeline import build
-    pieces = load_all(sys.argv[1])
-    tl = build(pieces)
-    mix, stems = score(tl, [p.render() for p in pieces])
-    out = sys.argv[2]
+    film = load_film(sys.argv[1], sys.argv[2])
+    tl = build(film.pieces)
+    mix, stems = score(tl, [p.render() for p in film.pieces])
+    out = sys.argv[3]
     os.makedirs(os.path.dirname(out) or '.', exist_ok=True)
     final, gain_db, gr_db = master(mix)
     write_wav(out, final)
@@ -355,5 +355,5 @@ if __name__ == '__main__':
     print('raw mix: peak %.1f dBFS  rms %.1f dBFS  dur %.2fs' % (db(np.abs(mix).max()), db(np.sqrt((mix ** 2).mean())), mix.shape[1] / SR))
     for k, v in stems.items():
         print('  %-6s peak %6.1f dBFS  rms %6.1f dBFS' % (k, db(np.abs(v).max()), db(np.sqrt((v ** 2).mean()))))
-        if len(sys.argv) > 3:
-            write_wav(os.path.join(sys.argv[3], f'stem_{k}.wav'), v)
+        if len(sys.argv) > 4:
+            write_wav(os.path.join(sys.argv[4], f'stem_{k}.wav'), v)

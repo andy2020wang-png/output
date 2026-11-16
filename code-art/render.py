@@ -8,7 +8,7 @@ import subprocess
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-from piece import load_all, HERE
+from piece import load_film, HERE
 from timeline import build, tokens, FPS
 
 W, H = 1080, 1920
@@ -16,13 +16,14 @@ TOP = 1080                       # the picture area is the top 1080 px
 IMG = 1024                       # pictures are shown pixel for pixel
 IMG_X = IMG_Y = (TOP - IMG) // 2
 BAR_Y, BAR_H = TOP, 86           # the strip between picture and code: three lights, the picture's name, its author
-FS = 29                          # code font size
-LINE_H = 51
 LANE_X, LANE_Y = 34, BAR_Y + BAR_H + 24
-THUMB = 4 * LINE_H               # channel picture: as tall as four lines of code
+THUMB = 204                      # channel picture
 LANE_GAP = 22
 CODE_X = LANE_X + THUMB + 20
 SAFE_R = 934                     # nothing important right of this (TikTok buttons)
+FS_MAX, FS_MIN = 29, 20          # code font size: the largest that lets the three lanes fit
+LANES_H = H - LANE_Y - 12        # height available to the three lanes
+TITLE_X = 166
 
 # ---- palette -----------------------------------------------------------------
 BG = (12, 15, 22)
@@ -41,8 +42,8 @@ FRAME = (196, 188, 168)
 FRAME_HOT = (255, 246, 222)
 SCAN_HOT = (255, 240, 214)
 
-KEYWORDS = {'unsigned', 'char', 'short', 'int', 'float', 'double', 'static', 'for', 'while', 'return', 'if', 'break', 'auto', 'define'}
-MATHFN = {'log', 'fabs', 'abs', 'exp', 'sin', 'cos', 'sqrt', 'pow', 'atan2', 'rand', 'floor'}
+KEYWORDS = {'unsigned', 'char', 'short', 'int', 'float', 'double', 'static', 'for', 'while', 'return', 'if', 'else', 'break', 'auto', 'define'}
+MATHFN = {'log', 'fabs', 'abs', 'exp', 'sin', 'cos', 'acos', 'sqrt', 'pow', 'atan2', 'rand', 'srand', 'time', 'floor'}
 MACROS = {'DIM', 'DM1', '_sq', '_cb', '_cr'}
 CHAN = {'RD': 0, 'GR': 1, 'BL': 2, 'red_fn': 0, 'green_fn': 1, 'blue_fn': 2}
 
@@ -138,31 +139,43 @@ def wrap_line(seg, width, nice=True):
 
 
 def layout(text, width):
-    """Rows for one lane: the tweet text flowed into rows of at most `width` characters (a preprocessor
-    line keeps a row to itself). Statement-friendly breaks are used when they do not cost a row.
+    """Rows for one lane: the tweet text flowed into rows of at most `width` characters. A preprocessor
+    line starts a row of its own. Statement-friendly breaks are used when they do not cost a row.
     -> [(start, end)] index ranges into the tweet text."""
     def rows(nice):
         out, base = [], 0
         for seg in text.split('\n'):
-            if seg.startswith('#'):
-                out.append((base, base + len(seg)))
-            else:
-                out += [(base + a, base + b) for a, b in wrap_line(seg, width, nice)]
+            out += [(base + a, base + b) for a, b in wrap_line(seg, width, nice)]
             base += len(seg) + 1
         return out
     good, plain = rows(True), rows(False)
     return good if len(good) <= len(plain) else plain
 
 
+class Lanes:
+    """How one piece's three functions are set: the largest code size at which the three lanes fit."""
+
+    def __init__(self, piece):
+        for fs in range(FS_MAX, FS_MIN - 1, -1):
+            f = mono(fs)
+            cw = f.getlength('M')
+            cols = int((SAFE_R + 6 - CODE_X) // cw)
+            line_h = int(round(fs * 51 / 29))
+            rows = [layout(fn[2], cols) for fn in piece.fns]
+            height = sum(max(THUMB, len(r) * line_h) for r in rows) + 2 * LANE_GAP
+            if height <= LANES_H:
+                break
+        else:
+            raise SystemExit(f'{piece.file}: the three functions do not fit the lanes')
+        self.fs, self.font, self.bold, self.cw, self.line_h, self.rows = fs, f, mono(fs, True), cw, line_h, rows
+        self.tok = [classify(fn[2]) for fn in piece.fns]
+        for fn, r in zip(piece.fns, rows):
+            assert ''.join(fn[2][a:b] for a, b in r) == fn[2].replace('\n', '')
+
+
 class Renderer:
     def __init__(self, pieces, tl):
         self.ps, self.tl = pieces, tl
-        self.f_code = mono(FS)
-        self.f_bold = mono(FS, True)
-        self.cw = self.f_code.getlength('M')
-        self.cols = int((SAFE_R + 6 - CODE_X) // self.cw)
-        self.f_title = sans(36, 700)
-        self.f_author = sans(29, 400)
         self.f_scan = mono(21, True)
         self.blank = self._blank()
         self.art = [p.render() for p in pieces]
@@ -172,10 +185,16 @@ class Renderer:
             self.thumb.append([small[..., k:k + 1] * np.array(CH[k], np.float32) for k in range(3)])
         self.top = self._top()
         self.bar = self._static_bar()
-        self.rows = [[layout(f[2], self.cols) for f in p.fns] for p in pieces]
-        self.tok = [[classify(f[2]) for f in p.fns] for p in pieces]
-        for p in pieces:                                  # name on the left, author on the right: they must not meet
-            assert 166 + self.f_title.getlength(p.title) + 40 < SAFE_R - self.f_author.getlength(p.author), p.title
+        self.lanes = [Lanes(p) for p in pieces]
+        self.strip = []                                   # per piece: (title font, author font), shrunk until both fit
+        for p in pieces:
+            for k in range(0, 12):
+                ft, fa = sans(36 - k, 700), sans(29 - k, 400)
+                if TITLE_X + ft.getlength(p.title) + 36 + fa.getlength(p.author) <= SAFE_R:
+                    break
+            else:
+                raise SystemExit(f'{p.file}: title and author do not fit the strip')
+            self.strip.append((ft, fa))
 
     # ---------------------------------------------------------------- picture area
     def _blank(self):
@@ -301,6 +320,7 @@ class Renderer:
         tl = self.tl
         s = tl.snap(t)
         p = self.ps[s.piece]
+        L = self.lanes[s.piece]
         im = Image.new('RGB', (W, H - BAR_Y), BG)
         im.paste(self.bar, (0, 0))
         d = ImageDraw.Draw(im)
@@ -331,14 +351,15 @@ class Renderer:
                                outline=mix(CH[k], BAR, 0.62 if active else 0.42) + (255,), width=int(2.5 * ss))
             tile = aa(60, 60, dot)
             im.paste(tile, (56 + 38 * k - 30, cy - 30), tile)
-        d.text((166, cy - 2), p.title, font=self.f_title, fill=(238, 242, 250), anchor='lm')
-        d.text((SAFE_R, cy - 1), p.author, font=self.f_author, fill=(186, 195, 216), anchor='rm')
+        ft, fa = self.strip[s.piece]
+        d.text((TITLE_X, cy - 2), p.title, font=ft, fill=(238, 242, 250), anchor='lm')
+        d.text((SAFE_R, cy - 1), p.author, font=fa, fill=(186, 195, 216), anchor='rm')
 
         # ---- three lanes: channel picture + function, all three advancing together
         y = LANE_Y - BAR_Y
         for k in range(3):
-            rows = self.rows[s.piece][k]
-            lane_h = max(THUMB, len(rows) * LINE_H)
+            rows = L.rows[k]
+            lane_h = max(THUMB, len(rows) * L.line_h)
             # channel picture: what this function alone contributes
             th = np.empty((THUMB, THUMB, 3), np.float32)
             th[:] = np.array(mix(CH[k], BG, 0.07), np.float32)
@@ -349,24 +370,26 @@ class Renderer:
                 if state == 'scan' and yi < THUMB:
                     th[yi] = np.array(mix(CH[k], (255, 255, 255), 0.6), np.float32)
             box = Image.fromarray(np.clip(th, 0, 255).astype(np.uint8))
-            im.paste(box, (LANE_X, y))
-            d.rectangle([LANE_X - 1, y - 1, LANE_X + THUMB, y + THUMB], outline=mix(CH[k], BG, 0.55))
+            ty = y + (lane_h - THUMB) // 2
+            im.paste(box, (LANE_X, ty))
+            d.rectangle([LANE_X - 1, ty - 1, LANE_X + THUMB, ty + THUMB], outline=mix(CH[k], BG, 0.55))
             # the function body
-            toks = self.tok[s.piece][k]
+            toks = L.tok[k]
             n = s.n[k]
             cur = (0, 0)
-            top = y + (lane_h - len(rows) * LINE_H) // 2             # fewer rows than the picture is tall: centre them
+            pad = (L.line_h - L.fs) // 2 - 5
+            top = y + (lane_h - len(rows) * L.line_h) // 2             # fewer rows than the picture is tall: centre them
             for r, (a, b) in enumerate(rows):
-                ry = top + r * LINE_H + 6
+                ry = top + r * L.line_h + pad
                 for pos, tk, c in toks:
                     u, v = max(pos, a), min(pos + len(tk), b, n)
                     if u < v and tk[u - pos:v - pos].strip():
-                        d.text((CODE_X + (u - a) * self.cw, ry), tk[u - pos:v - pos], font=self.f_bold if tk in CHAN else self.f_code, fill=c)
+                        d.text((CODE_X + (u - a) * L.cw, ry), tk[u - pos:v - pos], font=L.bold if tk in CHAN else L.font, fill=c)
                 if n > a or r == 0:
                     cur = (min(n, b) - a, r)
             if s.caret and (idle < 0.35 or (idle % 1.0) < 0.5):
-                cx, cyy = CODE_X + cur[0] * self.cw, top + cur[1] * LINE_H + 6
-                d.rectangle([cx, cyy + 3, cx + 3, cyy + FS + 9], fill=mix(CH[k], (255, 255, 255), 0.45))
+                cx, cyy = CODE_X + cur[0] * L.cw, top + cur[1] * L.line_h + pad
+                d.rectangle([cx, cyy + 3, cx + 3, cyy + L.fs + 9], fill=mix(CH[k], (255, 255, 255), 0.45))
             y += lane_h + LANE_GAP
         return im
 
@@ -397,16 +420,18 @@ def main():
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument('work')
+    ap.add_argument('film', help='which film of films.txt: its title, 上 / 下, or 1 / 2')
     ap.add_argument('--stills', help='comma separated times in seconds')
-    ap.add_argument('--cover', help='write a cover image (the closing frame) to this path')
+    ap.add_argument('--cover', help="write the cover (the film's cover piece, finished) to this path")
     ap.add_argument('--out', help='output dir for stills / path for video')
     ap.add_argument('--crf', type=int, default=15)
     a = ap.parse_args()
-    pieces = load_all(a.work)
-    tl = build(pieces)
-    r = Renderer(pieces, tl)
+    film = load_film(a.work, a.film)
+    tl = build(film.pieces)
+    r = Renderer(film.pieces, tl)
     if a.cover:
-        Image.fromarray(r.frame(tl.frames - 1)).save(a.cover, optimize=True)
+        os.makedirs(os.path.dirname(os.path.abspath(a.cover)), exist_ok=True)
+        Image.fromarray(r.frame(int(round(tl.cover_time(film.cover) * FPS)))).save(a.cover, optimize=True)
     if a.stills:
         os.makedirs(a.out, exist_ok=True)
         for ts in a.stills.split(','):

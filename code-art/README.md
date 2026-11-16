@@ -1,36 +1,57 @@
-# 程序与艺术 · Tweetable Mathematical Art
+# 程序的艺术（上、下）
 
-竖屏短视频，纯音效、无音乐。上半屏是一个细边框，框里的图自上而下一遍算出来；下半屏是红、绿、蓝三路：每路左边是该通道的小图，右边是算出它的函数，三个函数同时打出。
+两条竖屏短视频，纯音效、无音乐。选题是 Tweetable Mathematical Art：三个函数，每个不超过 140 个字符，算出一幅 1024×1024 的图。
+上半屏是一个细边框，图在框里自上而下一遍算出来；下半屏是红、绿、蓝三路，每路左边是该通道的小图，右边是算出它的函数，三个函数同时打出。
 画面由 numpy + Pillow 逐帧计算，声音由 numpy + scipy 合成，没有使用任何图片、视频或音频素材。
 
 | 文件 | 内容 |
 |---|---|
-| `out/程序与艺术_Tweetable_Mathematical_Art.mp4` | 成片（Git LFS）：1080×1920，60 fps，30.0 秒，H.264 CRF 15 + AAC 256k，−18 LUFS |
-| `out/程序与艺术_Tweetable_Mathematical_Art_封面.png` | 封面（1080×1920）：片尾画面，即得票第一的作品与它的三个函数 |
-| `out/程序与艺术_Tweetable_Mathematical_Art_音轨.wav` | 无损音轨（Git LFS，48 kHz / 16 bit 立体声） |
-| `code-art/pieces/*.cpp` | 六幅作品的完整程序，也是视频里显示的代码的唯一来源 |
+| `out/程序的艺术_上.mp4`、`out/程序的艺术_下.mp4` | 成片（Git LFS）：1080×1920，60 fps，各 30.0 秒，H.264 CRF 15 + AAC 256k，−18 LUFS |
+| `out/程序的艺术_上_封面.png`、`out/程序的艺术_下_封面.png` | 封面（1080×1920）：上用 2a，下用 2b，都是该作品算完时的画面 |
+| `out/程序的艺术_上_音轨.wav`、`out/程序的艺术_下_音轨.wav` | 无损音轨（Git LFS，48 kHz / 16 bit 立体声） |
+| `code-art/films.txt` | 片单：每条视频用哪几幅、按什么顺序、封面用哪一幅 |
+| `code-art/pieces/*.cpp` | 每幅作品的完整程序，也是视频里显示的代码的唯一来源 |
+| `code-art/cache/` | Buddhabrot 的计算结果（算一次要几个小时，所以存下来） |
 | `code-art/` 其余文件 | 时间轴、画面、音效与一键构建脚本 |
 
-## 选题与作品
+## 选题与片单
 
 选题是 Code Golf Stack Exchange 上 2014 年 8 月的挑战
 [Tweetable Mathematical Art](https://codegolf.stackexchange.com/questions/35569/tweetable-mathematical-art)（发起人 A Frayed Knot）：
 写三个函数，分别给出 1024×1024 图像中像素 `(i,j)` 的红、绿、蓝分量，每个函数体不超过 140 个字符（一条推文的长度）。按得票数决胜负。
 
-片中是 2026-11-15 时得票最高的六个回答，从第 6 名排到第 1 名，每幅约 4.8 秒：
+编号是该回答在 2026-11-16 的得票名次，字母表示同一回答里的第几幅图。
 
-| 名次 | 票数 | 作品 | 作者 | 许可 | 三个函数的字符数 |
+**上**（封面 2a）
+
+| 编号 | 作品 | 作者 | 票数 | 许可 | 三个函数的字符数 |
 |---|---|---|---|---|---|
-| 6 | 110 | [Julia sets](https://codegolf.stackexchange.com/a/35674) | teh internets is made of catz | CC BY-SA 3.0 | 139 / 112 / 112 |
-| 5 | 120 | [Mandelbrot 3 x 133 chars](https://codegolf.stackexchange.com/a/35739) | Manuel Kasten | CC BY-SA 4.0 | 132 / 132 / 132 |
-| 4 | 122 | [Mandelbrot](https://codegolf.stackexchange.com/a/35601) | Martin Ender | CC BY-SA 3.0 | 134 / 134 / 123 |
-| 3 | 162 | [Some swirly pointy things](https://codegolf.stackexchange.com/a/35689) | cjfaure | CC BY-SA 3.0 | 99 / 98 / 99 |
-| 2 | 190 | [Random painter](https://codegolf.stackexchange.com/a/35626) | Martin Ender | CC BY-SA 3.0 | 131 / 110 / 109 |
-| 1 | 207 | [Table cloths](https://codegolf.stackexchange.com/a/35641) | trichoplax | CC BY-SA 4.0 | 121 / 129 / 131 |
+| 1a | [Table cloths](https://codegolf.stackexchange.com/a/35641) | trichoplax | 207 | CC BY-SA 4.0 | 121 / 129 / 131 |
+| 2a | [Random painter](https://codegolf.stackexchange.com/a/35626) | Martin Ender | 190 | CC BY-SA 3.0 | 131 / 110 / 109 |
+| 9a | [Buddhabrot](https://codegolf.stackexchange.com/a/35897) | Martin Ender | 81 | CC BY-SA 3.0 | 135 / 138 / 139 |
+| 12 | [Random Voronoi diagram](https://codegolf.stackexchange.com/a/35784) | teh internets is made of catz | 60 | CC BY-SA 3.0 | 126 / 131 / 131 |
+| 4a | [Mandelbrot](https://codegolf.stackexchange.com/a/35601) | Martin Ender | 122 | CC BY-SA 3.0 | 134 / 134 / 123 |
+| 17 | [Spiral (140 exactly)](https://codegolf.stackexchange.com/a/35954) | Steven Moreland | 50 | CC BY-SA 3.0 | 23 / 19 / 96 |
 
-- 三个函数体与原帖逐字一致，没有改动。字符数不含换行与缩进，只计入 `#define` 所必需的那个换行。
+**下**（封面 2b）
+
+| 编号 | 作品 | 作者 | 票数 | 许可 | 三个函数的字符数 |
+|---|---|---|---|---|---|
+| 2b | [Random painter](https://codegolf.stackexchange.com/a/35626)（各向同性的变体） | Martin Ender | 190 | CC BY-SA 3.0 | 140 / 119 / 118 |
+| 3a | [Some swirly pointy things](https://codegolf.stackexchange.com/a/35689) | cjfaure | 162 | CC BY-SA 3.0 | 99 / 98 / 99 |
+| 5a | [Mandelbrot 3 x 133 chars](https://codegolf.stackexchange.com/a/35739) | Manuel Kasten | 120 | CC BY-SA 4.0 | 132 / 132 / 132 |
+| 8 | [Untitled](https://codegolf.stackexchange.com/a/35596)（原帖没有标题） | faubi | 103 | CC BY-SA 3.0 | 122 / 100 / 122 |
+| 19b | [Action Painting](https://codegolf.stackexchange.com/a/36187)（第三幅图的配色） | trichoplax | 44 | CC BY-SA 4.0 | 138 / 139 / 140 |
+| 14 | [Because unicorns](https://codegolf.stackexchange.com/a/35600) | Martin Ender | 54 | CC BY-SA 3.0 | 50 / 63 / 63 |
+
+`pieces/` 里还有一幅没有编入视频的 6a（Julia sets，teh internets is made of catz）。
+
+- 函数体与原帖逐字一致。字符数不含换行与缩进，只计入 `#define` 所必需的换行。有两幅是原帖里的变体，改动由作者在帖中给出：
+  2b 用帖中"各向同性"的那一行替换原函数体（帖中写出了红色函数，绿、蓝两个函数照样改函数名）；
+  19b 把 `E(21)` 换成第三幅图图注里的两个数（红 63、绿 49）。
 - 函数体以外的部分（`pieces/tweet.h` 和每个文件里的声明、`TWEET_MAIN`）是本仓库写的外壳，行为与挑战给出的 C++ 模板相同：同样的宏、同样的逐行顺序、每个像素依次调用红绿蓝三个函数、同样的取值掩码。
-- 这些作品按 CC BY-SA 授权。发布本片时需要署名作者、给出出处，并以相同的许可方式分享。片中分隔栏写有每幅作品的名字与作者；出处与许可协议不放在画面里，写在文末的发布文案中，发布时请一并贴出。
+- 片中的作品名不带"·"和句点：14 号原帖标题是"Because unicorns."，片中去掉了句点；8 号原帖没有标题，片中写作"Untitled"；12 号原帖标题是"Random Voronoi diagram generator anyone?"，片中取"Random Voronoi diagram"。
+- 这些作品按 CC BY-SA 授权。发布时需要署名作者、给出出处，并以相同的许可方式分享。片中分隔栏写有每幅作品的名字与作者；出处与许可协议不放在画面里，写在文末的发布文案中，发布时请一并贴出。
 
 ### 还原核对
 
@@ -38,29 +59,49 @@
 
 | 作品 | 与作者原图的比较 |
 |---|---|
-| Julia sets、Mandelbrot 3 x 133 chars | 全部像素完全一致 |
-| Table cloths | 99.99% 的像素完全一致 |
-| Some swirly pointy things | 99.97% 的像素完全一致 |
-| Mandelbrot（Martin Ender） | 99.7% 的像素完全一致 |
-| Random painter | 画面由 `rand()` 决定，与作者原图风格相同、内容不同 |
+| 5a Mandelbrot 3 x 133 chars、8 Untitled | 全部像素完全一致 |
+| 1a Table cloths、14 Because unicorns | 99.99% 的像素完全一致 |
+| 3a Some swirly pointy things | 99.97% 的像素完全一致 |
+| 4a Mandelbrot | 99.7% 的像素完全一致 |
+| 17 Spiral (140 exactly) | 作者贴出的是 JPEG；把本仓库的图按质量 75、4:2:0 存成 JPEG 后，与它完全一致 |
+| 9a Buddhabrot | 计算中，算完后与作者贴出的 16 位局部原图比对 |
+| 2a、2b Random painter，19b Action Painting | 用了 `rand()`：与作者原图风格相同、内容不同（结果取决于 C 库） |
+| 12 Random Voronoi diagram | 用了 `rand()` 和时钟：与作者原图风格相同、内容不同 |
 
 不一致的少数像素都在色块或条纹的边界上，来自不同编译器与处理器的浮点舍入。
 
-还原时有两处需要说明：
+### 还原时的处理
 
-- **`abs`**：Some swirly pointy things 里有 `abs(sin(...))`。现在的 g++ 在只包含 `<cmath>` 时会把它解析成整数版的 `abs`，结果恒为 0，图完全不同。`tweet.h` 里加了一行 `using std::abs;`，让它取浮点版，这样才与作者的原图一致。
-- **10 位输出的读法**：挑战的 10 位模板把每个分量按主机字节序写成两个字节，而 PPM 规定高字节在前。Some swirly pointy things 的函数只返回 0 到 6，按 PPM 的读法 1、2、3 变成 256、512、768（满值 1023），这幅图的色块就是这样来的；Julia sets 则要按函数返回的数值本身读取。每个作品文件头的 `@read` 记录了它的读法（`u8`、`le16`、`be16`）。
+这些是 2014 年的"代码高尔夫"，不少地方依赖当时编译器和看图软件的具体行为。函数体一个字符都没有改，下面这些处理都在外壳和构建方式里：
+
+- **`abs`**（3a）：`abs(sin(...))` 在现在的 g++ 下只包含 `<cmath>` 时会被解析成整数版，结果恒为 0。`tweet.h` 里加了 `using std::abs;`。
+- **10 位输出的读法**：挑战的 10 位模板把每个分量按主机字节序写成两个字节，而 PPM 规定高字节在前，不同作者用的看图软件处理方式不同。每个作品文件头的 `@read` 记录了与作者原图一致的读法：
+  `u8`（8 位模板，字节即图像）；`le16`（按函数返回的数值，除以 1023；6a、9a、12）；`be16`（按 PPM 规定高字节在前，除以 1023，超出部分截到白；3a）；
+  `im16`（同样高字节在前，但像 ImageMagick 那样乘 65535/1023 后只保留 16 位，取高字节，超出部分回绕；8）。
+- **没有 `return` 的分支**（9a）：`GR` 和 `BL` 各有一条分支不写返回值。现在的编译器可能把这种分支当作"不会执行"而删掉里面的代码，所以这幅用 `clang++ -fno-strict-return` 编译（文件头的 `@cxx`）。
+- **写到表格外面**（9a）：轨道的 y 接近 2 时，`GR` 会把计数写进表格之外的第 1024 行。按这里的编译结果，那 4 KB 有一部分落在未映射的内存上，实测程序会在算到最后 2% 时崩溃。`tweet.h` 的 `TWEET_GUARD` 在程序开始时把紧跟静态数据的两页内存映射好；`piece.py` 用 `nm` 确认这张表确实排在静态数据的最后。
+- **时钟**（12）：红色函数在每个像素都调用 `srand(time(0))`。只要整幅图在同一秒内算完，每个像素得到的是同一组 64 个点；一旦跨秒，红色通道从那一行起就换了一幅图。`tweet.h` 的 `TWEET_CLOCK` 让 `time()` 在整个运行期间返回同一个值，取的是原帖发布的时刻（2014-08-05 19:12:04 UTC）。
+
+### Buddhabrot 的计算
+
+9a 把全部计算放在第一次调用 `RD` 里：4095×4095 个起点，每个最多迭代 50 万次（作者说他当时跑了 6 到 7 小时）。在这里的机器上单线程估计要 4.7 小时。
+
+`tools/9a_split.py` 用同样的三个函数、对同样的起点做同样的 `BL` 调用，只是把起点分给几个进程，最后把各自的计数表相加，写出原程序会输出的字节（每次计数都是整数加减，先后顺序不影响结果）。结果存进 `cache/`，`piece.py` 发现有存好的结果就直接用。
+这个办法先在缩小的问题上验证过（1023×1023 个起点、1000 次迭代，按作者在帖中给的改法）：三个进程合并的结果与原程序单进程的输出逐字节相同。
+
+完整规模的计算正在进行，结果和核对情况算完后补在这里。
 
 ## 画面
 
 1080×1920，60 fps。图像以 1024×1024 原始分辨率逐像素显示，外面是一圈细边框。
-代码不进入右侧 140 px（TikTok / 抖音的按钮列）。下半屏的三路铺到距底边约 74 px：在 TikTok / 抖音里，最下面一路（蓝色通道）会被左下角的账号名和文案盖住一部分；想完全避开，可把 `render.py` 开头的 `LINE_H` 调小。
+代码不进入右侧 140 px（TikTok / 抖音的按钮列）。下半屏的三路铺到接近底边：在 TikTok / 抖音里，最下面一路（蓝色通道）会被左下角的账号名和文案盖住一部分。
 
-- 没有标题画面。第一帧就是完成的图（得票第一的作品），0.4 秒后自下而上擦除，然后从第 6 名开始。片尾停在同一幅图上，首尾相接可以循环。
+- 没有标题画面。第一帧是该条视频最后一幅作品的成图，0.4 秒后自下而上擦除，然后从第一幅开始。片尾停在同一幅图上，首尾相接可以循环。
 - 每幅作品：三个函数同时打出，图像自上而下一遍算完（3 秒），打字与扫描同时开始、同时结束。扫描线上的标签显示正在计算的行，如 `j = 512`。算完后边框亮一下，停留 1.5 秒，然后擦除，进入下一幅。
-- 分隔栏：左边三个圆点（红、绿、蓝，计算时闪动，完成后点亮），接着是这幅画的名字，右侧是作者。
-- 下半屏三路：每路左边是该通道单独贡献的小图（204×204，按通道着色，与上方大图同步扫出），右边是对应的函数体，三个光标同时前进。上方的大图就是三路叠加的结果。函数体按宽度折行，折行处尽量落在语句或运算符上；不显示函数签名。
+- 分隔栏：左边三个圆点（红、绿、蓝，计算时闪动，完成后点亮），接着是这幅画的名字，右侧是作者。名字和作者放不下时两者一起缩小。
+- 下半屏三路：每路左边是该通道单独贡献的小图（204×204，按通道着色，与上方大图同步扫出），右边是对应的函数体，三个光标同时前进。上方的大图就是三路叠加的结果。函数体按宽度折行，折行处尽量落在语句或运算符上；`#define` 另起一行；不显示函数签名。代码字号取能让三路放得下的最大值（29；行数多的作品会小一些：9a 为 27，19b 为 25）。
 - 扫描顺序与程序写像素的顺序一致（`j` 从 0 到 1023）。刚算出的行会短暂过曝再回落，扫描线的亮度跟随该行的像素值。
+- 封面是片单里指定的那一幅算完后 1.2 秒的画面。
 
 ## 声音
 
@@ -77,39 +118,60 @@
 ## 重新出片
 
 ```bash
-bash code-art/build.sh
+bash code-art/build.sh        # 片单里的每一条
+bash code-art/build.sh 下     # 只出一条（上、下，或 1、2）
 ```
 
-约 3 分钟（4 核 CPU）。需要 g++、Python 3（numpy、scipy、Pillow）、ffmpeg，以及 JetBrains Mono 字体（Debian / Ubuntu：`fonts-jetbrains-mono`；找不到时退回 DejaVu Sans Mono）。标题用仓库 `fonts/` 目录中的 Noto Sans SC。
+每条约 3 分钟（4 核 CPU）。需要 g++、clang++、Python 3（numpy、scipy、Pillow）、ffmpeg，以及 JetBrains Mono 字体（Debian / Ubuntu：`fonts-jetbrains-mono`；找不到时退回 DejaVu Sans Mono）。分隔栏的文字用仓库 `fonts/` 目录中的 Noto Sans SC。
 
 | 文件 | 作用 |
 |---|---|
-| `pieces/N_名称.cpp` | 一幅作品。文件头的 `@rank`、`@votes`、`@title`、`@author`、`@url`、`@license`、`@read` 决定片中的顺序、署名与图像读法 |
+| `films.txt` | 片单：`片名 \| 作品编号（播放顺序） \| 封面用哪一幅` |
+| `pieces/编号_名称.cpp` | 一幅作品。文件头的 `@rank`、`@votes`、`@title`、`@author`、`@url`、`@license` 是署名信息；`@read` 是图像读法；`@cxx` 是需要指定时的编译命令；`@slow` 表示要算几个小时、结果存进 `cache/` |
 | `pieces/tweet.h` | 各作品共用的外壳（宏与 `main`） |
-| `piece.py` | 解析三个函数、统计字符数（超过 140 即报错）、编译运行得到图像 |
+| `piece.py` | 解析三个函数、统计字符数（超过 140 即报错）、编译运行得到图像；读片单 |
 | `timeline.py` | 时间轴：每幅作品的打字节奏、一遍扫描、停留与擦除；节奏参数在文件开头 |
 | `render.py` | 逐帧画面，经管道送入 ffmpeg；`--stills 0,4.5 --out 目录` 可只出静帧 |
 | `sfx.py` | 音效合成与母带 |
+| `tools/9a_split.cpp`、`tools/9a_split.py` | 用多个进程算 Buddhabrot |
 | `build.sh` | 以上各步加合成 |
 
-增减作品：在 `pieces/` 下增删文件即可，片中按 `@rank` 从大到小播放，最后一幅同时是开场画面。
+换片单：改 `films.txt` 即可。加作品：在 `pieces/` 下新建文件，编号写在文件名最前面。
 
 ## 发布文案
 
-- 标题：程序与艺术｜三个函数，每个不超过 140 个字符，能算出什么
-- 正文：Tweetable Mathematical Art 挑战里得票最高的六幅，从第 6 名到第 1 名。红、绿、蓝各一个函数，三路一起算出一幅图。
-- 话题：#程序与艺术 #数学之美 #分形 #编程 #创意编程 #解压
+**程序的艺术 上**
+
+- 标题：程序的艺术 上｜三个函数，每个不超过 140 个字符，能算出什么
+- 正文：红、绿、蓝各一个函数，三路一起算出一幅图。六幅都来自 Tweetable Mathematical Art 挑战。
+- 话题：#程序的艺术 #数学之美 #分形 #编程 #创意编程 #解压
 - 出处与协议（画面里只有作品名与作者，这一段请随视频一并发布）：
 
   ```
   作品出自 Code Golf Stack Exchange 的 Tweetable Mathematical Art 挑战
   （codegolf.stackexchange.com/q/35569），按 CC BY-SA 协议使用，本视频以相同协议分享。
-  1. Julia sets — teh internets is made of catz — codegolf.stackexchange.com/a/35674 — CC BY-SA 3.0
-  2. Mandelbrot 3 x 133 chars — Manuel Kasten — codegolf.stackexchange.com/a/35739 — CC BY-SA 4.0
-  3. Mandelbrot — Martin Ender — codegolf.stackexchange.com/a/35601 — CC BY-SA 3.0
-  4. Some swirly pointy things — cjfaure — codegolf.stackexchange.com/a/35689 — CC BY-SA 3.0
-  5. Random painter — Martin Ender — codegolf.stackexchange.com/a/35626 — CC BY-SA 3.0
-  6. Table cloths — trichoplax — codegolf.stackexchange.com/a/35641 — CC BY-SA 4.0
+  1. Table cloths — trichoplax — codegolf.stackexchange.com/a/35641 — CC BY-SA 4.0
+  2. Random painter — Martin Ender — codegolf.stackexchange.com/a/35626 — CC BY-SA 3.0
+  3. Buddhabrot — Martin Ender — codegolf.stackexchange.com/a/35897 — CC BY-SA 3.0
+  4. Random Voronoi diagram — teh internets is made of catz — codegolf.stackexchange.com/a/35784 — CC BY-SA 3.0
+  5. Mandelbrot — Martin Ender — codegolf.stackexchange.com/a/35601 — CC BY-SA 3.0
+  6. Spiral (140 exactly) — Steven Moreland — codegolf.stackexchange.com/a/35954 — CC BY-SA 3.0
   ```
 
-- 英文版：The six top-voted entries of "Tweetable Mathematical Art": three functions, 140 characters each, one picture. Art by teh internets is made of catz, Manuel Kasten, Martin Ender, cjfaure and trichoplax (codegolf.stackexchange.com/q/35569, CC BY-SA). #codeart #mathart #fractal #creativecoding #generativeart #satisfying
+**程序的艺术 下**
+
+- 标题：程序的艺术 下｜三个函数，每个不超过 140 个字符，能算出什么
+- 正文：红、绿、蓝各一个函数，三路一起算出一幅图。六幅都来自 Tweetable Mathematical Art 挑战。
+- 话题：#程序的艺术 #数学之美 #分形 #编程 #创意编程 #解压
+- 出处与协议（请随视频一并发布）：
+
+  ```
+  作品出自 Code Golf Stack Exchange 的 Tweetable Mathematical Art 挑战
+  （codegolf.stackexchange.com/q/35569），按 CC BY-SA 协议使用，本视频以相同协议分享。
+  1. Random painter（各向同性的变体）— Martin Ender — codegolf.stackexchange.com/a/35626 — CC BY-SA 3.0
+  2. Some swirly pointy things — cjfaure — codegolf.stackexchange.com/a/35689 — CC BY-SA 3.0
+  3. Mandelbrot 3 x 133 chars — Manuel Kasten — codegolf.stackexchange.com/a/35739 — CC BY-SA 4.0
+  4. Untitled（原帖没有标题）— faubi — codegolf.stackexchange.com/a/35596 — CC BY-SA 3.0
+  5. Action Painting — trichoplax — codegolf.stackexchange.com/a/36187 — CC BY-SA 4.0
+  6. Because unicorns — Martin Ender — codegolf.stackexchange.com/a/35600 — CC BY-SA 3.0
+  ```

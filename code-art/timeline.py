@@ -1,7 +1,7 @@
 """Timeline: what the code window shows and which sounds fire, second by second.
 Picture (render.py) and sound (sfx.py) both read this, so they cannot drift apart.
 
-The film runs through the pieces from the lowest-ranked to the top-voted one. For every piece the
+The film runs through its pieces in the order films.txt gives. For every piece the
 three functions are typed at the same time, and while they are typed the picture is computed once,
 row by row from top to bottom, in the frame above: typing and scan start and end together.
 Then the finished picture is held, wiped away, and the next piece starts.
@@ -92,6 +92,10 @@ class Timeline:
                 hi = mid - 1
         return self.snaps[lo]
 
+    def cover_time(self, k):
+        """A moment at which piece k stands finished, after the frame's flash has faded."""
+        return self.done[k][0] + 1.2
+
     def canvas(self, t):
         """-> (piece, state, progress): state is 'done' | 'scan' | 'wipe' | 'blank'."""
         for t0, t1, p in self.wipes:
@@ -147,9 +151,10 @@ def build(pieces, seed=20261115):
 
 if __name__ == '__main__':
     import sys
-    from piece import load_all
-    ps = load_all(sys.argv[1] if len(sys.argv) > 1 else '/tmp/codeart_work')
+    from piece import load_film
+    film = load_film(sys.argv[1], sys.argv[2])
+    ps = film.pieces
     tl = build(ps)
-    print(f'total {tl.total:.2f}s  frames {tl.frames}  snaps {len(tl.snaps)}  keys {len(tl.keys)}')
+    print(f'{film.title}: total {tl.total:.2f}s  frames {tl.frames}  snaps {len(tl.snaps)}  keys {len(tl.keys)}  cover at {tl.cover_time(film.cover):.2f}s')
     for (t0, t1, p), (s0, s1, q), (td, _) in zip(tl.wipes, tl.passes, tl.done):
         print('wipe %.2f-%.2f (erases %s)   scan %.2f-%.2f  %s   done %.2f' % (t0, t1, ps[p].title, s0, s1, ps[q].title, td))
