@@ -148,38 +148,82 @@ bash code-art/build.sh 下     # 只出一条（上、下，或 1、2）
 
 ## 发布文案
 
-**程序的艺术 上**
+标题里不用"·"和句点。署名一段请保留（CC BY-SA 要求署名、给出出处并以相同协议分享）；如果平台提示描述太长，把署名一段移到置顶评论。
 
-- 标题：程序的艺术 上｜三个函数，每个不超过 140 个字符，能算出什么
-- 正文：红、绿、蓝各一个函数，三路一起算出一幅图。六幅都来自 Tweetable Mathematical Art 挑战。
-- 话题：#程序的艺术 #数学之美 #分形 #编程 #创意编程 #解压
-- 出处与协议（画面里只有作品名与作者，这一段请随视频一并发布）：
+### 程序的艺术 上
 
-  ```
-  作品出自 Code Golf Stack Exchange 的 Tweetable Mathematical Art 挑战
-  （codegolf.stackexchange.com/q/35569），按 CC BY-SA 协议使用，本视频以相同协议分享。
-  1. Table cloths — trichoplax — codegolf.stackexchange.com/a/35641 — CC BY-SA 4.0
-  2. Random painter — Martin Ender — codegolf.stackexchange.com/a/35626 — CC BY-SA 3.0
-  3. Buddhabrot — Martin Ender — codegolf.stackexchange.com/a/35897 — CC BY-SA 3.0
-  4. Random Voronoi diagram — teh internets is made of catz — codegolf.stackexchange.com/a/35784 — CC BY-SA 3.0
-  5. Mandelbrot — Martin Ender — codegolf.stackexchange.com/a/35601 — CC BY-SA 3.0
-  6. Spiral (140 exactly) — Steven Moreland — codegolf.stackexchange.com/a/35954 — CC BY-SA 3.0
-  ```
+标题：
 
-**程序的艺术 下**
+```
+程序的艺术 上｜140个字符的代码能画出什么
+```
 
-- 标题：程序的艺术 下｜三个函数，每个不超过 140 个字符，能算出什么
-- 正文：红、绿、蓝各一个函数，三路一起算出一幅图。六幅都来自 Tweetable Mathematical Art 挑战。
-- 话题：#程序的艺术 #数学之美 #分形 #编程 #创意编程 #解压
-- 出处与协议（请随视频一并发布）：
+正文：
 
-  ```
-  作品出自 Code Golf Stack Exchange 的 Tweetable Mathematical Art 挑战
-  （codegolf.stackexchange.com/q/35569），按 CC BY-SA 协议使用，本视频以相同协议分享。
-  1. Random painter（各向同性的变体）— Martin Ender — codegolf.stackexchange.com/a/35626 — CC BY-SA 3.0
-  2. Some swirly pointy things — cjfaure — codegolf.stackexchange.com/a/35689 — CC BY-SA 3.0
-  3. Mandelbrot 3 x 133 chars — Manuel Kasten — codegolf.stackexchange.com/a/35739 — CC BY-SA 4.0
-  4. Untitled（原帖没有标题）— faubi — codegolf.stackexchange.com/a/35596 — CC BY-SA 3.0
-  5. Action Painting — trichoplax — codegolf.stackexchange.com/a/36187 — CC BY-SA 4.0
-  6. Because unicorns — Martin Ender — codegolf.stackexchange.com/a/35600 — CC BY-SA 3.0
-  ```
+```
+红、绿、蓝各一个函数，每个不超过140个字符，正好一条推文那么长。代码一边打出来，画一边一行一行算出来。
+六幅都来自2014年的编程挑战 Tweetable Mathematical Art。第3幅 Buddhabrot，原作者当年算了6到7个小时。
+你最喜欢第几幅？
+#程序的艺术 #编程 #数学之美 #分形 #创意编程 #解压
+```
+
+署名：
+
+```
+作品与作者
+1 Table cloths／trichoplax
+2 Random painter／Martin Ender
+3 Buddhabrot／Martin Ender
+4 Random Voronoi diagram／teh internets is made of catz
+5 Mandelbrot／Martin Ender
+6 Spiral (140 exactly)／Steven Moreland
+出处 codegolf.stackexchange.com/q/35569
+原作按 CC BY-SA 3.0 或 4.0 授权，画面由原作代码编译运行生成，本视频以相同协议分享
+```
+
+### 程序的艺术 下
+
+标题：
+
+```
+程序的艺术 下｜140个字符的代码能画出什么
+```
+
+正文：
+
+```
+红、绿、蓝各一个函数，每个不超过140个字符，正好一条推文那么长。代码一边打出来，画一边一行一行算出来。
+六幅都来自2014年的编程挑战 Tweetable Mathematical Art。第5幅在模仿波洛克的滴画。
+你最喜欢第几幅？
+#程序的艺术 #编程 #数学之美 #分形 #创意编程 #解压
+```
+
+署名：
+
+```
+作品与作者
+1 Random painter／Martin Ender
+2 Some swirly pointy things／cjfaure
+3 Mandelbrot 3 x 133 chars／Manuel Kasten
+4 Untitled／faubi
+5 Action Painting／trichoplax
+6 Because unicorns／Martin Ender
+出处 codegolf.stackexchange.com/q/35569
+原作按 CC BY-SA 3.0 或 4.0 授权，画面由原作代码编译运行生成（第1、5幅用的是作者在原帖中给出的变体），本视频以相同协议分享
+```
+
+### TikTok 英文版
+
+TikTok 的描述上限一般按 2,200 字符算，放得下逐幅的链接。
+
+```
+The Art of Code, Part 1. Three functions, one each for red, green and blue, no more than 140 characters each, compute every pixel. All six come from the 2014 Tweetable Mathematical Art challenge. The Buddhabrot (#3) took its author 6 to 7 hours to render.
+Art: Table cloths by trichoplax codegolf.stackexchange.com/a/35641 (CC BY-SA 4.0); Random painter by Martin Ender codegolf.stackexchange.com/a/35626; Buddhabrot by Martin Ender codegolf.stackexchange.com/a/35897; Random Voronoi diagram by teh internets is made of catz codegolf.stackexchange.com/a/35784; Mandelbrot by Martin Ender codegolf.stackexchange.com/a/35601; Spiral (140 exactly) by Steven Moreland codegolf.stackexchange.com/a/35954 (CC BY-SA 3.0 unless noted). Rendered from the original code; shared under the same licence.
+#creativecoding #mathart #fractal #generativeart #programming #satisfying
+```
+
+```
+The Art of Code, Part 2. Three functions, one each for red, green and blue, no more than 140 characters each, compute every pixel. All six come from the 2014 Tweetable Mathematical Art challenge. #5 is a nod to Jackson Pollock's drip paintings.
+Art: Random painter by Martin Ender codegolf.stackexchange.com/a/35626; Some swirly pointy things by cjfaure codegolf.stackexchange.com/a/35689; Mandelbrot 3 x 133 chars by Manuel Kasten codegolf.stackexchange.com/a/35739 (CC BY-SA 4.0); Untitled by faubi codegolf.stackexchange.com/a/35596; Action Painting by trichoplax codegolf.stackexchange.com/a/36187 (CC BY-SA 4.0); Because unicorns by Martin Ender codegolf.stackexchange.com/a/35600 (CC BY-SA 3.0 unless noted). Rendered from the original code (#1 and #5 are variants their authors gave); shared under the same licence.
+#creativecoding #mathart #fractal #generativeart #programming #satisfying
+```
