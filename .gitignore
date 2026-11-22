@@ -10,3 +10,7 @@ out/build.log
 __pycache__/
 *.pyc
 node_modules/
+
+# 风格库：出片和检查图是生成物（参考片放在各风格的 reference/）
+styles/*/*/renders/
+styles/*/*/review/

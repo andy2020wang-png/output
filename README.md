@@ -29,3 +29,11 @@
 ## 重新出片
 
 `bash build.sh`（约 1 小时，4 核 CPU，无需显卡；需要 Node.js + Playwright Chromium、Python 3 + numpy / scipy / Pillow、ffmpeg）。字体已随仓库提供，见 `fonts/README.md`。
+
+## 风格库
+
+`styles/` 收录可以直接复用的视频风格。每个风格一个文件夹，里面有风格卡、精简引擎、参考片源码和参考片，索引见 [`styles/README.md`](styles/README.md)。
+
+| 风格 | 入口 |
+|---|---|
+| 无字证明 · 竖屏（几何形变，1080 × 1920，20–30 s） | [`styles/wuzi-zhengming/`](styles/wuzi-zhengming/) |

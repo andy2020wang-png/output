@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>无字证明：勾股定理</title>
+<style>
+/* 字体都在仓库根目录的 fonts/（开源授权，见 fonts/README.md）。新片复制这个文件夹时，这一段原样保留 */
+@font-face{font-family:"VK Sans";font-weight:400;src:url("../../../fonts/NotoSansSC-400.ttf")}
+@font-face{font-family:"VK Sans";font-weight:500;src:url("../../../fonts/NotoSansSC-500.ttf")}
+@font-face{font-family:"VK Sans";font-weight:700;src:url("../../../fonts/NotoSansSC-700.ttf")}
+@font-face{font-family:"VK Sans";font-weight:900;src:url("../../../fonts/NotoSansSC-900.ttf")}
+@font-face{font-family:"VK Serif";font-weight:400;src:url("../../../fonts/NotoSerifSC-400.ttf")}
+@font-face{font-family:"VK Serif";font-weight:700;src:url("../../../fonts/NotoSerifSC-700.ttf")}
+@font-face{font-family:"VK Latin";font-style:normal;font-weight:400;src:url("../../../fonts/CormorantGaramond-400.ttf")}
+@font-face{font-family:"VK Latin";font-style:normal;font-weight:600;src:url("../../../fonts/CormorantGaramond-600.ttf")}
+@font-face{font-family:"VK Latin";font-style:italic;font-weight:500;src:url("../../../fonts/CormorantGaramond-500i.ttf")}
+@font-face{font-family:"VK Plex";font-weight:400;src:url("../../../fonts/IBMPlexMono-400.ttf")}
+@font-face{font-family:"VK Plex";font-weight:500;src:url("../../../fonts/IBMPlexMono-500.ttf")}
+html,body{margin:0;background:#07080A;overflow:hidden;height:100vh;display:flex;align-items:center;justify-content:center}
+canvas{display:block;max-width:100vw;max-height:100vh}
+</style></head>
+<body><canvas id="stage"></canvas>
+<!-- 引擎 → 共用件和几何画法 → 风格外壳 → 这一部片（只有 proof.js 是这部片自己的） -->
+<script src="../engine/vk-lite.js"></script>
+<script src="../engine/geo-lite.js"></script>
+<script src="../engine/style.js"></script>
+<script src="proof.js"></script>
+</body></html>
